@@ -17,8 +17,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ErrorFallback from './components/ErrorFallback';
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
-import AdminPanel from './pages/AdminPanel';
-import Debugger from './pages/Debugger';
+import CustomReportBuilder from './pages/CustomReportBuilder';
 import { contractService } from './services/contracts';
 
 function App() {
