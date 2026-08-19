@@ -12,6 +12,7 @@ import Governance from './pages/Governance';
 import Profile from './pages/Profile';
 import CrossAssetPayment from './pages/CrossAssetPayment';
 import RevenueSplitDashboard from './pages/RevenueSplitDashboard';
+import CustomReportBuilder from './pages/CustomReportBuilder';
 import AppLayout from './components/AppLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorFallback from './components/ErrorFallback';
@@ -135,6 +136,22 @@ function App() {
           element={
             <ErrorBoundary fallback={<ErrorFallback title="Vesting Escrow Error" />}>
               <VestingEscrowManager />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ErrorBoundary fallback={<ErrorFallback title="Admin Panel Error" />}>
+              <AdminPanel />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/debug"
+          element={
+            <ErrorBoundary fallback={<ErrorFallback title="Debugger Error" />}>
+              <Debugger />
             </ErrorBoundary>
           }
         />
