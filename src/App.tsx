@@ -13,6 +13,7 @@ import Profile from './pages/Profile';
 import CrossAssetPayment from './pages/CrossAssetPayment';
 import RevenueSplitDashboard from './pages/RevenueSplitDashboard';
 import CustomReportBuilder from './pages/CustomReportBuilder';
+import BulkPaymentTracker from './pages/BulkPaymentTracker';
 import AppLayout from './components/AppLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorFallback from './components/ErrorFallback';
@@ -110,6 +111,14 @@ function App() {
           element={
             <ErrorBoundary fallback={<ErrorFallback title="Custom Report Builder Error" />}>
               <CustomReportBuilder />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/bulk-payments"
+          element={
+            <ErrorBoundary fallback={<ErrorFallback title="Bulk Payment Tracker Error" />}>
+              <BulkPaymentTracker />
             </ErrorBoundary>
           }
         />
