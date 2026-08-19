@@ -18,7 +18,10 @@ import ErrorFallback from './components/ErrorFallback';
 import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
 import CustomReportBuilder from './pages/CustomReportBuilder';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import { contractService } from './services/contracts';
+import { AuthProvider } from './providers/AuthProvider';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   // Initialize contract service on app startup
@@ -29,116 +32,135 @@ function App() {
   }, []);
 
   return (
-    <Routes>
-      <Route element={<AppLayout />}>
-        <Route
-          path="/"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Landing Page Error" />}>
-              <LandingPage />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Dashboard Error" />}>
-              <Home />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/tasks"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Explorer Error" />}>
-              <TaskExplorer />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/create-task"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Create Task Error" />}>
-              <CreateTask />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/escrow"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Escrow Error" />}>
-              <EscrowManager />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/cross-asset"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Cross-Asset Error" />}>
-              <CrossAssetPayment />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/revenue-split"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Revenue Split Error" />}>
-              <RevenueSplitDashboard />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/governance"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Governance Error" />}>
-              <Governance />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/history"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="History Error" />}>
-              <PaymentLedger />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Custom Report Builder Error" />}>
-              <CustomReportBuilder />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Settings Error" />}>
-              <Settings />
-            </ErrorBoundary>
-          }
-        />
-        <Route path="/login" element={<Login />} />
-        <Route path="/auth-callback" element={<AuthCallback />} />
-        <Route
-          path="/profile"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Profile Error" />}>
-              <Profile />
-            </ErrorBoundary>
-          }
-        />
-        <Route
-          path="/vesting"
-          element={
-            <ErrorBoundary fallback={<ErrorFallback title="Vesting Escrow Error" />}>
-              <VestingEscrowManager />
-            </ErrorBoundary>
-          }
-        />
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route element={<AppLayout />}>
+          {/* Public Routes */}
+          <Route
+            path="/"
+            element={
+              <ErrorBoundary fallback={<ErrorFallback title="Landing Page Error" />}>
+                <LandingPage />
+              </ErrorBoundary>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/auth-callback" element={<AuthCallback />} />
+
+          {/* Protected Routes (Any Authenticated User) */}
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path="/dashboard"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Dashboard Error" />}>
+                  <Home />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/tasks"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Explorer Error" />}>
+                  <TaskExplorer />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Profile Error" />}>
+                  <Profile />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Settings Error" />}>
+                  <Settings />
+                </ErrorBoundary>
+              }
+            />
+          </Route>
+
+          {/* Protected Routes (Employer Only) */}
+          <Route element={<ProtectedRoute allowedRoles={['employer']} />}>
+            <Route
+              path="/create-task"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Create Task Error" />}>
+                  <CreateTask />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/escrow"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Escrow Error" />}>
+                  <EscrowManager />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/vesting"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Vesting Escrow Error" />}>
+                  <VestingEscrowManager />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/cross-asset"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Cross-Asset Error" />}>
+                  <CrossAssetPayment />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/revenue-split"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Revenue Split Error" />}>
+                  <RevenueSplitDashboard />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/governance"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Governance Error" />}>
+                  <Governance />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/history"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="History Error" />}>
+                  <PaymentLedger />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Custom Report Builder Error" />}>
+                  <CustomReportBuilder />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Analytics Dashboard Error" />}>
+                  <AnalyticsDashboard />
+                </ErrorBoundary>
+              }
+            />
+          </Route>
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 
