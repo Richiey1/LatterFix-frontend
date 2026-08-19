@@ -1,4 +1,4 @@
-# Bulk Payment Status Tracker (#37)
+# Wire up the Bulk Payment Status Tracker and fix its unsafe retry path (#37)
 
 ## Summary
 
