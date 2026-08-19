@@ -1,18 +1,5 @@
-import {
-  BASE_FEE,
-  Contract,
-  Networks,
-  rpc,
-  TransactionBuilder,
-  nativeToScVal,
-} from '@stellar/stellar-sdk';
-import { simulateTransaction } from './transactionSimulation';
-
 const API_BASE_URL =
   (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:3000';
-const DEFAULT_RPC_URL =
-  (import.meta.env.PUBLIC_STELLAR_RPC_URL as string | undefined) ||
-  'https://soroban-testnet.stellar.org';
 
 export interface PayrollRunRecord {
   id: number;
@@ -54,19 +41,6 @@ interface PayrollRunsListResponse {
 interface PayrollRunSummaryResponse {
   success: boolean;
   data: PayrollRunSummary;
-}
-
-export interface RetryInvocationOptions {
-  contractId: string;
-  batchId: string;
-  sourceAddress: string;
-  signTransaction: (xdr: string) => Promise<string>;
-  rpcUrl?: string;
-}
-
-function getNetworkPassphrase(): string {
-  const network = (import.meta.env.PUBLIC_STELLAR_NETWORK as string | undefined)?.toUpperCase();
-  return network === 'MAINNET' ? Networks.PUBLIC : Networks.TESTNET;
 }
 
 function normalizeBaseUrl(url: string): string {
@@ -116,42 +90,6 @@ export function getTxExplorerUrl(
   network: 'testnet' | 'public' = 'testnet'
 ): string {
   return `https://stellar.expert/explorer/${network}/tx/${txHash}`;
-}
-
-export async function retryFailedBatch(
-  options: RetryInvocationOptions
-): Promise<{ txHash: string }> {
-  const rpcUrl = normalizeBaseUrl(options.rpcUrl || DEFAULT_RPC_URL);
-  const server = new rpc.Server(rpcUrl, { allowHttp: rpcUrl.startsWith('http://') });
-  const account = await server.getAccount(options.sourceAddress);
-  const contract = new Contract(options.contractId);
-
-  const tx = new TransactionBuilder(account, {
-    fee: BASE_FEE,
-    networkPassphrase: getNetworkPassphrase(),
-  })
-    .addOperation(contract.call('retry_failed_batch', nativeToScVal(options.batchId)))
-    .setTimeout(60)
-    .build();
-
-  const simulation = await simulateTransaction({
-    envelopeXdr: tx.toXDR(),
-  });
-
-  if (!simulation.success) {
-    throw new Error(simulation.description || 'Simulation failed for retry transaction');
-  }
-
-  const prepared = await server.prepareTransaction(tx);
-  const signedXdr = await options.signTransaction(prepared.toXDR());
-  const signedTx = TransactionBuilder.fromXDR(signedXdr, getNetworkPassphrase());
-  const submitted = await server.sendTransaction(signedTx);
-
-  if (submitted.status === 'ERROR') {
-    throw new Error('Retry submission failed on Soroban RPC.');
-  }
-
-  return { txHash: submitted.hash };
 }
 
 export async function executePayroll(
