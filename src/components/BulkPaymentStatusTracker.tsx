@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNotification } from '../hooks/useNotification';
 import { useSocket } from '../hooks/useSocket';
-import { useWallet } from '../hooks/useWallet';
-import { useWalletSigning } from '../hooks/useWalletSigning';
-import { contractService } from '../services/contracts';
 import {
   fetchPayrollRuns,
   fetchPayrollRunSummary,
   getTxExplorerUrl,
-  retryFailedBatch,
   type PayrollRecipientStatus,
   type PayrollRunRecord,
   type PayrollRunSummary,
 } from '../services/bulkPaymentStatus';
+
+const RETRY_UNAVAILABLE_REASON =
+  'Retrying a failed recipient requires a backend endpoint that resubmits only the failed items. That endpoint does not exist yet — re-running the batch would also re-pay recipients who already succeeded.';
 
 interface BulkPaymentStatusTrackerProps {
   organizationId: number;
@@ -77,13 +76,10 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
   const [expandedRunId, setExpandedRunId] = useState<number | null>(null);
   const [confirmations, setConfirmations] = useState<ConfirmationMap>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isRetryingBatchId, setIsRetryingBatchId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { notifyError, notifySuccess } = useNotification();
+  const { notifyError } = useNotification();
   const { socket } = useSocket();
-  const { requireWallet } = useWallet();
-  const { sign } = useWalletSigning();
 
   const loadRuns = useCallback(async () => {
     setIsLoading(true);
@@ -158,44 +154,6 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
     await loadSummary(runId);
   };
 
-  const handleRetry = async (run: PayrollRunRecord) => {
-    const walletAddress = await requireWallet();
-    if (!walletAddress) {
-      return;
-    }
-
-    const summary = summaries[run.id];
-    const hasFailedRecipients = summary?.items.some((item) => item.status === 'failed');
-    if (!hasFailedRecipients) return;
-
-    setIsRetryingBatchId(run.batch_id);
-    try {
-      await contractService.initialize();
-      const contractId =
-        contractService.getContractId('bulk_payment', 'testnet') ||
-        (import.meta.env.VITE_BULK_PAYMENT_CONTRACT_ID as string | undefined);
-
-      if (!contractId) {
-        throw new Error('Bulk payment contract ID is unavailable.');
-      }
-
-      const { txHash } = await retryFailedBatch({
-        contractId,
-        batchId: run.batch_id,
-        sourceAddress: walletAddress,
-        signTransaction: sign,
-      });
-
-      notifySuccess('Retry submitted', `Batch ${run.batch_id} was re-invoked. TX: ${txHash}`);
-      await loadSummary(run.id);
-    } catch (retryError) {
-      const message = retryError instanceof Error ? retryError.message : 'Retry failed';
-      notifyError('Retry failed', message);
-    } finally {
-      setIsRetryingBatchId(null);
-    }
-  };
-
   const rows = useMemo(() => {
     return runs.map((run) => {
       const summary = summaries[run.id];
@@ -267,13 +225,9 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
                     txHash={txHash}
                     confirmationCount={confirmationCount}
                     expanded={expandedRunId === run.id}
-                    retrying={isRetryingBatchId === run.batch_id}
                     hasFailedRecipients={hasFailedRecipients}
                     onToggleExpand={() => {
                       void handleToggleExpand(run.id);
-                    }}
-                    onRetry={() => {
-                      void handleRetry(run);
                     }}
                   />
                 )
@@ -293,10 +247,8 @@ interface FragmentRowProps {
   txHash: string | null;
   confirmationCount: number;
   expanded: boolean;
-  retrying: boolean;
   hasFailedRecipients: boolean;
   onToggleExpand: () => void;
-  onRetry: () => void;
 }
 
 function FragmentRow({
@@ -306,10 +258,8 @@ function FragmentRow({
   txHash,
   confirmationCount,
   expanded,
-  retrying,
   hasFailedRecipients,
   onToggleExpand,
-  onRetry,
 }: FragmentRowProps) {
   return (
     <>
@@ -347,11 +297,11 @@ function FragmentRow({
             {hasFailedRecipients ? (
               <button
                 type="button"
-                onClick={onRetry}
-                disabled={retrying}
-                className="text-danger hover:text-danger/80 disabled:opacity-60"
+                disabled
+                title={RETRY_UNAVAILABLE_REASON}
+                className="text-danger opacity-60 cursor-not-allowed"
               >
-                {retrying ? 'Retrying...' : 'Retry Failed'}
+                Retry Failed
               </button>
             ) : null}
           </div>
