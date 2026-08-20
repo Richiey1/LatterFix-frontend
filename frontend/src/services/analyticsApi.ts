@@ -20,11 +20,12 @@ export interface AnalyticsData {
 }
 
 export const fetchAnalyticsData = async (
-  _startDate: string,
-  _endDate: string
+  startDate: string,
+  endDate: string
 ): Promise<AnalyticsData> => {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 800));
+  console.debug(`Fetching analytics data from ${startDate} to ${endDate}`);
 
   // Mock data that changes slightly based on the date range
   // In a real app, you would pass startDate and endDate to your backend API
