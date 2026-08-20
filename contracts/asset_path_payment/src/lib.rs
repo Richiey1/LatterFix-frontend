@@ -62,7 +62,7 @@ pub struct PathPaymentRecord {
 }
 
 /// Event emitted when a path payment is initiated
-#[contractevent]
+#[contracttype]
 pub struct PathPaymentInitiated {
     pub payment_id: u64,
     pub from: Address,
@@ -74,7 +74,7 @@ pub struct PathPaymentInitiated {
 }
 
 /// Event emitted when a path payment completes
-#[contractevent]
+#[contracttype]
 pub struct PathPaymentCompleted {
     pub payment_id: u64,
     pub actual_source_amount: i128,
@@ -82,7 +82,7 @@ pub struct PathPaymentCompleted {
 }
 
 /// Event emitted when a path payment fails
-#[contractevent]
+#[contracttype]
 pub struct PathPaymentFailed {
     pub payment_id: u64,
     pub error_code: u32,
@@ -103,7 +103,7 @@ impl AssetPathPaymentContract {
     /// Initialize the contract with an admin address
     pub fn init(env: Env, admin: Address) {
         if env.storage().persistent().has(&DataKey::Admin) {
-            panic!("{}", PathPaymentError::AlreadyInitialized);
+            panic!("{:?}", PathPaymentError::AlreadyInitialized);
         }
         env.storage().persistent().set(&DataKey::Admin, &admin);
         env.storage().persistent().set(&DataKey::PaymentCount, &0u64);

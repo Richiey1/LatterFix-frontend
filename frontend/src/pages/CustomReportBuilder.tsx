@@ -20,7 +20,6 @@ const ALL_COLUMNS: ReportColumn[] = [
 // Preview data state (fetched from backend)
 type PreviewRow = Record<string, any>;
 
-
 const CustomReportBuilder = () => {
   const { notifyError, notifySuccess } = useNotification();
 
@@ -113,7 +112,8 @@ const CustomReportBuilder = () => {
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Export token request failed');
 
-      const url = format === 'excel' ? json.excelUrl || json.downloadUrl : json.csvUrl || json.downloadUrl;
+      const url =
+        format === 'excel' ? json.excelUrl || json.downloadUrl : json.csvUrl || json.downloadUrl;
       if (!url) throw new Error('No download URL returned');
 
       notifySuccess('Export ready', 'Opening download in new tab');
@@ -166,7 +166,9 @@ const CustomReportBuilder = () => {
               <h3 className="font-semibold text-lg border-b pb-2">Export Settings</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Organization Public Key</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Organization Public Key
+                  </label>
                   <input
                     type="text"
                     placeholder="G..."
@@ -176,7 +178,9 @@ const CustomReportBuilder = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Payroll Batch ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Payroll Batch ID
+                  </label>
                   <input
                     type="text"
                     placeholder="batch_123"
@@ -281,7 +285,9 @@ const CustomReportBuilder = () => {
                             colSpan={Math.max(1, activeColumns.length)}
                             className="px-6 py-8 text-center text-gray-500"
                           >
-                            {isLoadingPreview ? 'Loading preview...' : 'No data found for the selected date range.'}
+                            {isLoadingPreview
+                              ? 'Loading preview...'
+                              : 'No data found for the selected date range.'}
                           </td>
                         </tr>
                       )}

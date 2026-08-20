@@ -52,7 +52,9 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setAddress(null);
       setIsConnecting(false);
       setIsInitialized(true);
-      notify(`Wallet reset — reconnect to continue on ${network === 'mainnet' ? 'Mainnet' : 'Testnet'}.`);
+      notify(
+        `Wallet reset — reconnect to continue on ${network === 'mainnet' ? 'Mainnet' : 'Testnet'}.`
+      );
       return;
     }
     isFirstNetworkRun.current = false;

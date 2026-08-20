@@ -86,7 +86,8 @@ export default function VestingEscrowManager() {
         setContractId(resolvedContractId);
       } catch (loadError) {
         if (!active) return;
-        const message = loadError instanceof Error ? loadError.message : 'Unable to load contract registry';
+        const message =
+          loadError instanceof Error ? loadError.message : 'Unable to load contract registry';
         setError(message);
         notifyError('Vesting contract setup failed', message);
       }
@@ -127,7 +128,8 @@ export default function VestingEscrowManager() {
         const totalAmount = BigInt(grant.totalAmount || '0');
         const vestedAmount = BigInt(String(vestedResult.value || '0'));
         const claimableAmount = BigInt(String(claimableResult.value || '0'));
-        const progress = totalAmount > 0n ? Math.min(100, Number((vestedAmount * 10000n) / totalAmount) / 100) : 0;
+        const progress =
+          totalAmount > 0n ? Math.min(100, Number((vestedAmount * 10000n) / totalAmount) / 100) : 0;
 
         setGrants([
           {
@@ -139,7 +141,8 @@ export default function VestingEscrowManager() {
         ]);
       } catch (loadError) {
         if (!active) return;
-        const message = loadError instanceof Error ? loadError.message : 'Unable to load vesting grants';
+        const message =
+          loadError instanceof Error ? loadError.message : 'Unable to load vesting grants';
         setError(message);
         notifyError('Vesting grants load failed', message);
       } finally {
@@ -157,15 +160,25 @@ export default function VestingEscrowManager() {
   }, [address, contractId, notifyError]);
 
   const summary = useMemo(() => {
-    const totalAmount = grants.reduce((sum: bigint, grant: VestingGrantState) => sum + BigInt(grant.totalAmount || '0'), 0n);
-    const vestedAmount = grants.reduce((sum: bigint, grant: VestingGrantState) => sum + BigInt(grant.vestedAmount || '0'), 0n);
-    const claimableAmount = grants.reduce((sum: bigint, grant: VestingGrantState) => sum + BigInt(grant.claimableAmount || '0'), 0n);
+    const totalAmount = grants.reduce(
+      (sum: bigint, grant: VestingGrantState) => sum + BigInt(grant.totalAmount || '0'),
+      0n
+    );
+    const vestedAmount = grants.reduce(
+      (sum: bigint, grant: VestingGrantState) => sum + BigInt(grant.vestedAmount || '0'),
+      0n
+    );
+    const claimableAmount = grants.reduce(
+      (sum: bigint, grant: VestingGrantState) => sum + BigInt(grant.claimableAmount || '0'),
+      0n
+    );
 
     return {
       totalAmount,
       vestedAmount,
       claimableAmount,
-      progress: totalAmount > 0n ? Math.min(100, Number((vestedAmount * 10000n) / totalAmount) / 100) : 0,
+      progress:
+        totalAmount > 0n ? Math.min(100, Number((vestedAmount * 10000n) / totalAmount) / 100) : 0,
     };
   }, [grants]);
 
@@ -182,7 +195,10 @@ export default function VestingEscrowManager() {
     }
 
     if (!form.beneficiary || !form.token || !form.amount) {
-      notifyError('Incomplete grant', 'Please provide the beneficiary, token contract, and amount.');
+      notifyError(
+        'Incomplete grant',
+        'Please provide the beneficiary, token contract, and amount.'
+      );
       return;
     }
 
@@ -229,7 +245,10 @@ export default function VestingEscrowManager() {
 
     try {
       const result = await vestingContract.claim();
-      setLastTx({ hash: result.txHash, action: `Claimed ${formatAmount(grant.claimableAmount)} tokens` });
+      setLastTx({
+        hash: result.txHash,
+        action: `Claimed ${formatAmount(grant.claimableAmount)} tokens`,
+      });
       notifySuccess('Claim submitted', `On-chain claim transaction submitted: ${result.txHash}`);
       void loadGrants();
     } catch (claimError) {
@@ -265,7 +284,8 @@ export default function VestingEscrowManager() {
       const totalAmount = BigInt(grant.totalAmount || '0');
       const vestedAmount = BigInt(String(vestedResult.value || '0'));
       const claimableAmount = BigInt(String(claimableResult.value || '0'));
-      const progress = totalAmount > 0n ? Math.min(100, Number((vestedAmount * 10000n) / totalAmount) / 100) : 0;
+      const progress =
+        totalAmount > 0n ? Math.min(100, Number((vestedAmount * 10000n) / totalAmount) / 100) : 0;
 
       setGrants([
         {
@@ -276,7 +296,8 @@ export default function VestingEscrowManager() {
         },
       ]);
     } catch (loadError) {
-      const message = loadError instanceof Error ? loadError.message : 'Unable to load vesting grants';
+      const message =
+        loadError instanceof Error ? loadError.message : 'Unable to load vesting grants';
       setError(message);
       notifyError('Vesting grants load failed', message);
     } finally {
@@ -341,16 +362,24 @@ export default function VestingEscrowManager() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="card glass noise p-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Total Grant Value</p>
-          <p className="mt-2 text-xl font-black text-white">{formatAmount(summary.totalAmount.toString())}</p>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted">
+            Total Grant Value
+          </p>
+          <p className="mt-2 text-xl font-black text-white">
+            {formatAmount(summary.totalAmount.toString())}
+          </p>
         </div>
         <div className="card glass noise p-4">
           <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Vested</p>
-          <p className="mt-2 text-xl font-black text-white">{formatAmount(summary.vestedAmount.toString())}</p>
+          <p className="mt-2 text-xl font-black text-white">
+            {formatAmount(summary.vestedAmount.toString())}
+          </p>
         </div>
         <div className="card glass noise p-4">
           <p className="text-[10px] font-bold uppercase tracking-wider text-muted">Claimable</p>
-          <p className="mt-2 text-xl font-black text-white">{formatAmount(summary.claimableAmount.toString())}</p>
+          <p className="mt-2 text-xl font-black text-white">
+            {formatAmount(summary.claimableAmount.toString())}
+          </p>
         </div>
       </div>
 
@@ -360,7 +389,8 @@ export default function VestingEscrowManager() {
             <div>
               <h2 className="text-lg font-bold text-white">Active Vesting Grants</h2>
               <p className="text-[10px] font-mono text-muted uppercase tracking-wider">
-                Live on-chain state from {contractId ? contractId.slice(0, 12) : 'the configured contract'}
+                Live on-chain state from{' '}
+                {contractId ? contractId.slice(0, 12) : 'the configured contract'}
               </p>
             </div>
             <div className="flex items-center gap-2 text-accent text-xs font-semibold">
@@ -381,11 +411,18 @@ export default function VestingEscrowManager() {
           ) : null}
 
           {grants.map((grant) => (
-            <div key={`${grant.beneficiary}-${grant.startTime}`} className="rounded-2xl border border-white/10 bg-black/20 p-5 space-y-4">
+            <div
+              key={`${grant.beneficiary}-${grant.startTime}`}
+              className="rounded-2xl border border-white/10 bg-black/20 p-5 space-y-4"
+            >
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-bold text-white">{grant.beneficiary.slice(0, 12)}...{grant.beneficiary.slice(-6)}</p>
-                  <p className="text-[11px] text-muted font-mono">Token: {grant.token.slice(0, 12)}...{grant.token.slice(-6)}</p>
+                  <p className="text-sm font-bold text-white">
+                    {grant.beneficiary.slice(0, 12)}...{grant.beneficiary.slice(-6)}
+                  </p>
+                  <p className="text-[11px] text-muted font-mono">
+                    Token: {grant.token.slice(0, 12)}...{grant.token.slice(-6)}
+                  </p>
                 </div>
                 <div className="rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent">
                   {grant.isActive ? 'Active' : 'Inactive'}
@@ -395,16 +432,22 @@ export default function VestingEscrowManager() {
               <div className="grid gap-3 md:grid-cols-3 text-sm">
                 <div className="rounded-xl bg-white/5 p-3">
                   <p className="text-[10px] uppercase tracking-wider text-muted">Start</p>
-                  <p className="mt-1 font-semibold text-white">{new Date(grant.startTime * 1000).toLocaleDateString()}</p>
+                  <p className="mt-1 font-semibold text-white">
+                    {new Date(grant.startTime * 1000).toLocaleDateString()}
+                  </p>
                 </div>
                 <div className="rounded-xl bg-white/5 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-muted">Cliff / Duration</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted">
+                    Cliff / Duration
+                  </p>
                   <p className="mt-1 font-semibold text-white">
                     {grant.cliffSeconds / 86400}d / {grant.durationSeconds / 86400}d
                   </p>
                 </div>
                 <div className="rounded-xl bg-white/5 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-muted">Total / Claimable</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted">
+                    Total / Claimable
+                  </p>
                   <p className="mt-1 font-semibold text-white">
                     {formatAmount(grant.totalAmount)} / {formatAmount(grant.claimableAmount)}
                   </p>
@@ -413,18 +456,25 @@ export default function VestingEscrowManager() {
 
               <div>
                 <div className="mb-2 flex items-center justify-between text-xs text-muted">
-                  <span className="flex items-center gap-1"><Clock3 className="w-3.5 h-3.5" /> Vesting progress</span>
+                  <span className="flex items-center gap-1">
+                    <Clock3 className="w-3.5 h-3.5" /> Vesting progress
+                  </span>
                   <span>{grant.progress.toFixed(1)}%</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${Math.max(4, grant.progress)}%` }} />
+                  <div
+                    className="h-full rounded-full bg-accent transition-all"
+                    style={{ width: `${Math.max(4, grant.progress)}%` }}
+                  />
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/5 pt-3 text-xs text-muted">
                 <div className="flex items-center gap-2">
                   <Coins className="w-3.5 h-3.5 text-accent" />
-                  <span>Vested {formatAmount(grant.vestedAmount)} of {formatAmount(grant.totalAmount)}</span>
+                  <span>
+                    Vested {formatAmount(grant.vestedAmount)} of {formatAmount(grant.totalAmount)}
+                  </span>
                 </div>
                 <button
                   onClick={() => {
@@ -450,7 +500,10 @@ export default function VestingEscrowManager() {
 
           <form className="space-y-4" onSubmit={handleCreateGrant}>
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="beneficiary">
+              <label
+                className="text-xs font-semibold uppercase tracking-wider text-muted"
+                htmlFor="beneficiary"
+              >
                 Beneficiary Address
               </label>
               <input
@@ -463,7 +516,10 @@ export default function VestingEscrowManager() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="token">
+              <label
+                className="text-xs font-semibold uppercase tracking-wider text-muted"
+                htmlFor="token"
+              >
                 Token Contract Address
               </label>
               <input
@@ -477,7 +533,10 @@ export default function VestingEscrowManager() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="startDate">
+                <label
+                  className="text-xs font-semibold uppercase tracking-wider text-muted"
+                  htmlFor="startDate"
+                >
                   Start Date
                 </label>
                 <input
@@ -489,7 +548,10 @@ export default function VestingEscrowManager() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="amount">
+                <label
+                  className="text-xs font-semibold uppercase tracking-wider text-muted"
+                  htmlFor="amount"
+                >
                   Amount
                 </label>
                 <input
@@ -504,7 +566,10 @@ export default function VestingEscrowManager() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="cliffDays">
+                <label
+                  className="text-xs font-semibold uppercase tracking-wider text-muted"
+                  htmlFor="cliffDays"
+                >
                   Cliff (days)
                 </label>
                 <input
@@ -517,7 +582,10 @@ export default function VestingEscrowManager() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="durationDays">
+                <label
+                  className="text-xs font-semibold uppercase tracking-wider text-muted"
+                  htmlFor="durationDays"
+                >
                   Duration (days)
                 </label>
                 <input
@@ -536,7 +604,11 @@ export default function VestingEscrowManager() {
               disabled={isSubmitting || !contractId}
               className="w-full rounded-xl bg-accent px-4 py-3 font-semibold text-bg disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isSubmitting ? <Loader2 className="mx-auto w-4 h-4 animate-spin" /> : 'Create Vesting Grant'}
+              {isSubmitting ? (
+                <Loader2 className="mx-auto w-4 h-4 animate-spin" />
+              ) : (
+                'Create Vesting Grant'
+              )}
             </button>
           </form>
         </section>
