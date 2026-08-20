@@ -71,6 +71,9 @@ describe('NetworkProvider / useNetwork', () => {
       await Promise.resolve();
     });
 
-    expect(mocks.notifyError).toHaveBeenCalledWith('Contract registry refresh failed', 'network down');
+    expect(mocks.notifyError).toHaveBeenCalledWith(
+      'Contract registry refresh failed',
+      'network down'
+    );
   });
 });

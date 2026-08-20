@@ -260,9 +260,7 @@ export default function RevenueSplitDashboard() {
                         />
                       ))}
                     </Pie>
-                    <Tooltip
-                      formatter={(value?: number) => `${(value ?? 0).toFixed(2)}%`}
-                    />
+                    <Tooltip formatter={(value?: number) => `${(value ?? 0).toFixed(2)}%`} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -315,7 +313,9 @@ export default function RevenueSplitDashboard() {
                   <input
                     type="number"
                     value={Number.isFinite(entry.percentage) ? entry.percentage : 0}
-                    onChange={(event) => setAllocationField(index, 'percentage', event.target.value)}
+                    onChange={(event) =>
+                      setAllocationField(index, 'percentage', event.target.value)
+                    }
                     min={0}
                     max={100}
                     step={0.01}
