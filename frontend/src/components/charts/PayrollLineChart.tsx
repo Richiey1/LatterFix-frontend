@@ -33,7 +33,12 @@ const PayrollLineChart: React.FC<Props> = ({ data }) => {
           <XAxis dataKey="date" stroke="#94a3b8" />
           <YAxis stroke="#94a3b8" />
           <Tooltip
-            contentStyle={{ backgroundColor: '#1e293b', border: 'none', color: '#fff', borderRadius: '8px' }}
+            contentStyle={{
+              backgroundColor: '#1e293b',
+              border: 'none',
+              color: '#fff',
+              borderRadius: '8px',
+            }}
           />
           <Legend />
           <Line

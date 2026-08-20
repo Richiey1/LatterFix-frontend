@@ -8,7 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Cell
+  Cell,
 } from 'recharts';
 import { SuccessRateData } from '../../services/analyticsApi';
 
@@ -18,17 +18,23 @@ interface Props {
 
 const getBarColor = (status: string) => {
   switch (status.toLowerCase()) {
-    case 'successful': return '#10b981';
-    case 'failed': return '#ef4444';
-    case 'pending': return '#f59e0b';
-    default: return '#3b82f6';
+    case 'successful':
+      return '#10b981';
+    case 'failed':
+      return '#ef4444';
+    case 'pending':
+      return '#f59e0b';
+    default:
+      return '#3b82f6';
   }
 };
 
 const SuccessRateBarChart: React.FC<Props> = ({ data }) => {
   return (
     <div className="h-[300px] w-full bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-      <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Transaction Status</h3>
+      <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">
+        Transaction Status
+      </h3>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -43,7 +49,12 @@ const SuccessRateBarChart: React.FC<Props> = ({ data }) => {
           <XAxis dataKey="status" stroke="#94a3b8" />
           <YAxis stroke="#94a3b8" />
           <Tooltip
-            contentStyle={{ backgroundColor: '#1e293b', border: 'none', color: '#fff', borderRadius: '8px' }}
+            contentStyle={{
+              backgroundColor: '#1e293b',
+              border: 'none',
+              color: '#fff',
+              borderRadius: '8px',
+            }}
             cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
           />
           <Legend />

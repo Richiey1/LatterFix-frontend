@@ -80,22 +80,27 @@ const AnalyticsDashboard: React.FC = () => {
             <div className="lg:col-span-1">
               <SuccessRateBarChart data={data.successRates} />
             </div>
-            
+
             {/* Summary Statistics Card */}
             <div className="lg:col-span-1 bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-              <h3 className="text-lg font-semibold mb-6 text-slate-800 dark:text-white">Quick Stats</h3>
+              <h3 className="text-lg font-semibold mb-6 text-slate-800 dark:text-white">
+                Quick Stats
+              </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-4 bg-blue-50 dark:bg-slate-700/50 rounded-lg">
                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Total Processed</p>
                   <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {data.payrollTrends.reduce((sum, item) => sum + item.amount, 0).toLocaleString()}
+                    {data.payrollTrends
+                      .reduce((sum, item) => sum + item.amount, 0)
+                      .toLocaleString()}
                   </p>
                 </div>
                 <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
                   <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Success Rate</p>
                   <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                     {(() => {
-                      const success = data.successRates.find(r => r.status === 'Successful')?.count || 0;
+                      const success =
+                        data.successRates.find((r) => r.status === 'Successful')?.count || 0;
                       const total = data.successRates.reduce((sum, r) => sum + r.count, 0);
                       return total > 0 ? Math.round((success / total) * 100) + '%' : '0%';
                     })()}

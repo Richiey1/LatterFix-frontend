@@ -29,7 +29,7 @@ export const fetchAnalyticsData = async (
 
   // Mock data that changes slightly based on the date range
   // In a real app, you would pass startDate and endDate to your backend API
-  
+
   return {
     payrollTrends: [
       { date: 'Jan', amount: 4000 },
