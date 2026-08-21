@@ -12,6 +12,7 @@ import Governance from './pages/Governance';
 import Profile from './pages/Profile';
 import CrossAssetPayment from './pages/CrossAssetPayment';
 import RevenueSplitDashboard from './pages/RevenueSplitDashboard';
+import EmployeePortal from './pages/EmployeePortal';
 import AppLayout from './components/AppLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorFallback from './components/ErrorFallback';
@@ -70,6 +71,14 @@ function App() {
               element={
                 <ErrorBoundary fallback={<ErrorFallback title="Profile Error" />}>
                   <Profile />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/portal"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Employee Portal Error" />}>
+                  <EmployeePortal />
                 </ErrorBoundary>
               }
             />
