@@ -20,6 +20,9 @@ import Login from './pages/Login';
 import AuthCallback from './pages/AuthCallback';
 import CustomReportBuilder from './pages/CustomReportBuilder';
 import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import BulkPaymentTracker from './pages/BulkPaymentTracker';
+import AdminPanel from './pages/AdminPanel';
+import Debugger from './pages/Debugger';
 import { contractService } from './services/contracts';
 import { AuthProvider } from './providers/AuthProvider';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -87,6 +90,22 @@ function App() {
               element={
                 <ErrorBoundary fallback={<ErrorFallback title="Settings Error" />}>
                   <Settings />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Admin Panel Error" />}>
+                  <AdminPanel />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/debug"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Debugger Error" />}>
+                  <Debugger />
                 </ErrorBoundary>
               }
             />
@@ -163,6 +182,14 @@ function App() {
               element={
                 <ErrorBoundary fallback={<ErrorFallback title="Analytics Dashboard Error" />}>
                   <AnalyticsDashboard />
+                </ErrorBoundary>
+              }
+            />
+            <Route
+              path="/bulk-payments"
+              element={
+                <ErrorBoundary fallback={<ErrorFallback title="Bulk Payment Tracker Error" />}>
+                  <BulkPaymentTracker />
                 </ErrorBoundary>
               }
             />
