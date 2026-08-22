@@ -21,6 +21,7 @@ import {
   Clock3,
   PieChart,
   ListChecks,
+  Wallet,
 } from 'lucide-react';
 import { useTaskStore } from '../services/taskStore';
 import { useWallet } from '../hooks/useWallet';
