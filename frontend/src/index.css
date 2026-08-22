@@ -148,6 +148,124 @@ h6 {
   }
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Responsive Layout Utilities ── */
+.page-container {
+  @apply px-4 sm:px-6 lg:px-8 xl:px-12;
+}
+
+.header-padding {
+  @apply px-4 sm:px-8 lg:px-16;
+}
+
+.section-spacing {
+  @apply space-y-6 sm:space-y-8;
+}
+
+/* ── Touch Target Utilities ── */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+}
+
+.btn-mobile {
+  @apply py-3 px-4 text-base sm:py-2 sm:px-3 sm:text-sm;
+}
+
+.input-mobile {
+  @apply py-3 text-base sm:py-2 sm:text-sm;
+}
+
+/* ── Mobile-First Modal ── */
+.modal-mobile {
+  @apply max-w-full mx-0 rounded-none sm:max-w-2xl sm:mx-auto sm:rounded-2xl;
+}
+
+.modal-content-mobile {
+  @apply p-4 sm:p-6 max-h-[90vh] sm:max-h-[70vh];
+}
+
+/* ── Chart Container ── */
+.chart-container {
+  @apply w-full aspect-video sm:aspect-[16/9] lg:aspect-[4/3];
+}
+
+/* ── Table Responsive ── */
+.table-responsive {
+  @apply overflow-x-auto;
+}
+
+.table-responsive table {
+  @apply min-w-[800px];
+}
+
+@media (max-width: 639px) {
+  .table-stack {
+    @apply block;
+  }
+  .table-stack thead {
+    @apply hidden;
+  }
+  .table-stack tbody,
+  .table-stack tr,
+  .table-stack td {
+    @apply block;
+  }
+  .table-stack tr {
+    @apply mb-4 p-4 bg-[var(--surface)] border border-[var(--border)] rounded-xl;
+  }
+  .table-stack td {
+    @apply py-1.5 px-0 border-0 flex justify-between;
+  }
+  .table-stack td::before {
+    @apply font-mono text-[var(--muted)] text-[10px] uppercase tracking-wider;
+    content: attr(data-label);
+  }
+}
+
+/* ── Card Grid Responsive ── */
+.card-grid {
+  @apply grid gap-4 sm:gap-6;
+}
+
+.card-grid-1 {
+  @apply grid-cols-1;
+}
+
+.card-grid-2 {
+  @apply grid-cols-1 sm:grid-cols-2;
+}
+
+.card-grid-3 {
+  @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+.card-grid-4 {
+  @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+}
+
+/* ── Form Spacing ── */
+.form-group {
+  @apply space-y-2 sm:space-y-3;
+}
+
+.form-section {
+  @apply space-y-4 sm:space-y-6;
+}
+
 /* ── SDS Component Fixes ── */
 select {
   appearance: none !important;

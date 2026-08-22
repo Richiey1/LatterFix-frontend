@@ -11,6 +11,7 @@ import {
   Loader2,
   ExternalLink,
   Zap,
+  X,
 } from 'lucide-react';
 import { useTaskStore, Task } from '../services/taskStore';
 import { useContractTask } from '../hooks/useContractTask';
@@ -300,16 +301,16 @@ export default function TaskExplorer() {
 
       {/* Task Details Drawer/Modal */}
       {selectedTask && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-white/10 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 sm:p-0">
+          <div className="bg-slate-900 border border-white/10 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto shadow-2xl modal-mobile">
             <button
               onClick={() => {
                 setSelectedTask(null);
                 setShowDisputeInput(false);
               }}
-              className="absolute top-4 right-4 text-muted hover:text-white p-2 rounded-lg bg-white/5 transition"
+              className="absolute top-4 right-4 touch-target rounded-lg bg-white/5 text-muted hover:text-white hover:bg-white/10 transition"
             >
-              ✕
+              <X className="w-6 h-6" />
             </button>
 
             {/* Task Info */}
@@ -433,7 +434,7 @@ export default function TaskExplorer() {
                       ) : (
                         <button
                           onClick={() => handleApply(selectedTask.id)}
-                          className="w-full py-3.5 bg-accent text-bg font-extrabold rounded-2xl hover:scale-102 transition-transform shadow-lg shadow-accent/20"
+                          className="w-full py-3.5 bg-accent text-bg font-extrabold rounded-2xl hover:scale-102 transition-transform shadow-lg shadow-accent/20 btn-mobile touch-target"
                         >
                           Apply For Task (Requires {selectedTask.reputationRequired} Rep)
                         </button>
@@ -452,14 +453,14 @@ export default function TaskExplorer() {
                         ) : (
                           <button
                             onClick={() => handleSubmit(selectedTask.id)}
-                            className="w-full py-3.5 bg-accent text-bg font-extrabold rounded-2xl hover:scale-102 transition-transform shadow-lg shadow-accent/20"
+                            className="w-full py-3.5 bg-accent text-bg font-extrabold rounded-2xl hover:scale-102 transition-transform shadow-lg shadow-accent/20 btn-mobile touch-target"
                           >
                             Submit Task Completion
                           </button>
                         )}
                         <button
                           onClick={() => setShowDisputeInput(true)}
-                          className="py-3.5 px-6 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/25 rounded-2xl font-bold transition"
+                          className="py-3.5 px-6 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/25 rounded-2xl font-bold transition btn-mobile touch-target"
                         >
                           File Dispute
                         </button>
@@ -503,7 +504,7 @@ export default function TaskExplorer() {
                             .tasks.find((t) => t.id === originalId);
                           if (updated) setSelectedTask(updated);
                         }}
-                        className="px-6 py-3.5 bg-accent text-bg font-extrabold rounded-2xl hover:scale-102 transition-transform shadow-lg shadow-accent/20 flex items-center gap-1.5 shrink-0"
+                        className="px-6 py-3.5 bg-accent text-bg font-extrabold rounded-2xl hover:scale-102 transition-transform shadow-lg shadow-accent/20 flex items-center gap-1.5 shrink-0 btn-mobile touch-target"
                       >
                         <Coins className="w-4 h-4" /> Fund Escrow
                       </button>
@@ -526,7 +527,7 @@ export default function TaskExplorer() {
                               <span className="truncate pr-4">{app}</span>
                               <button
                                 onClick={() => handleAssign(selectedTask.id, app)}
-                                className="px-3 py-1.5 bg-accent text-bg font-extrabold rounded-lg hover:scale-105 transition-transform"
+                                className="px-3 py-1.5 bg-accent text-bg font-extrabold rounded-lg hover:scale-105 transition-transform btn-mobile touch-target"
                               >
                                 Assign
                               </button>
@@ -552,7 +553,7 @@ export default function TaskExplorer() {
                           </span>
                           <button
                             onClick={() => handlePayout(selectedTask.id)}
-                            className="px-4 py-2 bg-green-500 text-bg font-bold rounded-lg hover:scale-105 transition-transform"
+                            className="px-4 py-2 bg-green-500 text-bg font-bold rounded-lg hover:scale-105 transition-transform btn-mobile touch-target"
                           >
                             Release Funds
                           </button>
@@ -562,7 +563,7 @@ export default function TaskExplorer() {
                           <p className="text-xs text-muted">Waiting for assignee to submit work.</p>
                           <button
                             onClick={() => setShowDisputeInput(true)}
-                            className="px-4 py-2 bg-red-500/15 border border-red-500/20 text-red-400 hover:bg-red-500/25 rounded-lg text-xs font-bold transition"
+                            className="px-4 py-2 bg-red-500/15 border border-red-500/20 text-red-400 hover:bg-red-500/25 rounded-lg text-xs font-bold transition btn-mobile touch-target"
                           >
                             File Dispute
                           </button>
@@ -608,13 +609,13 @@ export default function TaskExplorer() {
                   <div className="flex justify-end gap-2 text-xs">
                     <button
                       onClick={() => setShowDisputeInput(false)}
-                      className="px-3 py-1.5 bg-white/5 text-muted hover:text-white rounded-lg"
+                      className="px-3 py-1.5 bg-white/5 text-muted hover:text-white rounded-lg btn-mobile touch-target"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => handleDispute(selectedTask.id)}
-                      className="px-3.5 py-1.5 bg-red-500 text-white font-bold rounded-lg hover:scale-102 transition"
+                      className="px-3.5 py-1.5 bg-red-500 text-white font-bold rounded-lg hover:scale-102 transition btn-mobile touch-target"
                     >
                       Confirm Dispute
                     </button>

@@ -21,7 +21,7 @@ const AppLayout: React.FC = () => {
     >
       {/* Header */}
       <header
-        className="fixed top-0 left-0 right-0 z-50 h-(--header-h) items-center px-16 flex justify-between backdrop-blur-[20px] backdrop-saturate-180 border-b"
+        className="fixed top-0 left-0 right-0 z-50 h-(--header-h) items-center flex justify-between header-padding backdrop-blur-[20px] backdrop-saturate-180 border-b"
         style={{
           background: 'color-mix(in srgb, var(--bg) 85%, transparent)',
           borderColor: 'var(--border-hi)',
@@ -41,9 +41,9 @@ const AppLayout: React.FC = () => {
         </NavLink>
 
         {/* Nav */}
-        <div className="flex items-center gap-6 ml-auto">
+        <div className="flex items-center gap-4 ml-auto">
           <AppNav />
-          <div className="ml-4 flex items-center gap-3">
+          <div className="ml-4 flex items-center gap-2">
             <ThemeToggle />
             <ConnectAccount />
           </div>
@@ -54,7 +54,7 @@ const AppLayout: React.FC = () => {
       <main className="flex flex-col flex-1 pt-(--header-h)">
         <TestnetBanner />
         <PageWrapper>
-          <div key={location.pathname} className="flex flex-col flex-1 px-6 py-8">
+          <div key={location.pathname} className="flex flex-col flex-1 page-container py-6 sm:py-8">
             <Outlet />
           </div>
         </PageWrapper>
@@ -62,7 +62,7 @@ const AppLayout: React.FC = () => {
 
       {/* Footer */}
       <footer
-        className="flex flex-wrap justify-between items-center gap-2 px-6 py-5 border-t text-xs font-mono text-(--muted)"
+        className="flex flex-wrap justify-between items-center gap-2 header-padding py-5 border-t text-xs font-mono text-(--muted)"
         style={{ borderColor: 'var(--border-hi)' }}
       >
         <span>

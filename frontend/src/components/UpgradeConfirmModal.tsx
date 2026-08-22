@@ -420,7 +420,7 @@ export default function UpgradeConfirmModal({
       onClick={handleBackdropClick}
     >
       <div
-        className="relative w-full max-w-2xl mx-4 bg-surface border border-hi rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl mx-4 bg-surface border border-hi rounded-2xl shadow-2xl overflow-hidden modal-mobile"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal header */}
@@ -432,10 +432,10 @@ export default function UpgradeConfirmModal({
           {!['executing', 'simulating'].includes(modal.step) && (
             <button
               onClick={() => void handleCancel()}
-              className="p-1.5 rounded-lg hover:bg-white/5 text-muted hover:text-text transition-colors"
+              className="touch-target rounded-lg hover:bg-white/5 text-muted hover:text-text transition-colors"
               aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             </button>
           )}
         </div>
@@ -446,7 +446,7 @@ export default function UpgradeConfirmModal({
         </div>
 
         {/* Step content */}
-        <div className="px-6 pb-6 max-h-[70vh] overflow-y-auto">
+        <div className="px-6 pb-6 max-h-[70vh] overflow-y-auto modal-content-mobile">
           {/* ── Step 1: INPUT ─────────────────────────────────────────── */}
           {modal.step === 'input' && (
             <div className="flex flex-col gap-5">
@@ -495,7 +495,7 @@ export default function UpgradeConfirmModal({
                         : m
                     )
                   }
-                  className={`${INPUT_CLASS} ${modal.validationError ? 'border-red-500/60' : ''}`}
+                  className={`${INPUT_CLASS} ${modal.validationError ? 'border-red-500/60' : ''} input-mobile`}
                   placeholder="64-character hex SHA-256 of the new WASM bytecode"
                   spellCheck={false}
                   maxLength={64}
@@ -519,7 +519,7 @@ export default function UpgradeConfirmModal({
               <button
                 onClick={() => void handleValidateAndSimulate()}
                 disabled={modal.validating || !modal.wasmHash.trim()}
-                className="flex items-center justify-center gap-2 py-3.5 bg-accent/20 text-accent border border-accent/40 font-black rounded-xl hover:bg-accent hover:text-black transition-all uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 py-3.5 bg-accent/20 text-accent border border-accent/40 font-black rounded-xl hover:bg-accent hover:text-black transition-all uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed btn-mobile touch-target"
               >
                 {modal.validating ? (
                   <>
@@ -667,14 +667,14 @@ export default function UpgradeConfirmModal({
               <div className="flex gap-3 mt-2">
                 <button
                   onClick={() => void handleCancel()}
-                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest btn-mobile touch-target"
                 >
                   Cancel
                 </button>
                 {modal.simulation.success && (
                   <button
                     onClick={handleAcceptReview}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl text-sm font-black hover:bg-accent hover:text-black transition-all uppercase tracking-widest"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl text-sm font-black hover:bg-accent hover:text-black transition-all uppercase tracking-widest btn-mobile touch-target"
                   >
                     Proceed <ArrowRight className="w-4 h-4" />
                   </button>
@@ -728,7 +728,7 @@ export default function UpgradeConfirmModal({
                       m.step === 'authorize' ? { ...m, adminSecret: e.target.value.trim() } : m
                     )
                   }
-                  className={INPUT_CLASS}
+                  className={`${INPUT_CLASS} input-mobile`}
                   placeholder="S..."
                   autoComplete="off"
                   spellCheck={false}
@@ -742,14 +742,14 @@ export default function UpgradeConfirmModal({
               <div className="flex gap-3 mt-2">
                 <button
                   onClick={() => void handleCancel()}
-                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest btn-mobile touch-target"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => void handleExecute()}
                   disabled={!modal.adminSecret.trim()}
-                  className="flex-1 py-3 bg-red-500/20 text-red-400 border border-red-500/40 rounded-xl text-sm font-black hover:bg-red-500 hover:text-white transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-3 bg-red-500/20 text-red-400 border border-red-500/40 rounded-xl text-sm font-black hover:bg-red-500 hover:text-white transition-all uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed btn-mobile touch-target"
                 >
                   Execute Upgrade
                 </button>
@@ -862,15 +862,15 @@ export default function UpgradeConfirmModal({
                   <code className="flex-1 font-mono text-xs break-all">{modal.txHash}</code>
                   <button
                     onClick={() => copyToClipboard(modal.txHash)}
-                    className="p-1.5 hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
+                    className="touch-target hover:bg-white/5 rounded text-muted hover:text-text transition-colors shrink-0"
                   >
-                    <Copy className="w-3.5 h-3.5" />
+                    <Copy className="w-5 h-5" />
                   </button>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="w-full py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-accent hover:text-black transition-all"
+                className="w-full py-3 bg-accent/20 text-accent border border-accent/40 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-accent hover:text-black transition-all btn-mobile touch-target"
               >
                 Done
               </button>
@@ -899,7 +899,7 @@ export default function UpgradeConfirmModal({
               <div className="flex gap-3 w-full">
                 <button
                   onClick={onClose}
-                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 py-3 border border-hi rounded-xl text-sm font-bold text-muted hover:text-text hover:bg-white/5 transition-all uppercase tracking-widest btn-mobile touch-target"
                 >
                   Close
                 </button>
@@ -912,7 +912,7 @@ export default function UpgradeConfirmModal({
                       validationError: null,
                     })
                   }
-                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-black/20 border border-hi rounded-xl text-sm font-bold hover:bg-white/5 transition-all uppercase tracking-widest"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 bg-black/20 border border-hi rounded-xl text-sm font-bold hover:bg-white/5 transition-all uppercase tracking-widest btn-mobile touch-target"
                 >
                   <RefreshCw className="w-4 h-4" /> Try Again
                 </button>
