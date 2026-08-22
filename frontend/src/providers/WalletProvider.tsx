@@ -25,12 +25,19 @@ function hasAnyWalletExtension(): boolean {
   return Boolean(extendedWindow.freighterApi || extendedWindow.xBullSDK || extendedWindow.lobstr);
 }
 
+function showWalletExtensionWarning(notify: (message: string) => void) {
+  notify(
+    'Wallet extension not detected. Install Freighter, xBull, or Lobstr to sign transactions.'
+  );
+}
+
 export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [address, setAddress] = useState<string | null>(null);
   const [walletName, setWalletName] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [walletExtensionAvailable, setWalletExtensionAvailable] = useState(true);
+  const [extensionWarningShown, setExtensionWarningShown] = useState(false);
   const kitRef = useRef<StellarWalletsKit | null>(null);
   const isFirstNetworkRun = useRef(true);
   const { t } = useTranslation();
@@ -38,7 +45,13 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const { network } = useNetwork();
 
   useEffect(() => {
-    setWalletExtensionAvailable(hasAnyWalletExtension());
+    const available = hasAnyWalletExtension();
+    setWalletExtensionAvailable(available);
+
+    if (!available && !extensionWarningShown) {
+      showWalletExtensionWarning(notify);
+      setExtensionWarningShown(true);
+    }
 
     const newKit = new StellarWalletsKit({
       network: network === 'mainnet' ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET,
@@ -46,8 +59,6 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
     kitRef.current = newKit;
 
-    // Network switch after initial load: reset wallet context (#085) rather
-    // than silently reconnecting under the new network's passphrase.
     if (!isFirstNetworkRun.current) {
       setAddress(null);
       setIsConnecting(false);
@@ -87,7 +98,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
 
     void attemptSilentReconnect();
-  }, [network, notify, notifySuccess]);
+  }, [network, notify, notifySuccess, extensionWarningShown]);
 
   const connect = async (): Promise<string | null> => {
     const kit = kitRef.current;
@@ -160,12 +171,6 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   return (
     <>
-      {!walletExtensionAvailable && (
-        <div className="sticky top-0 z-50 w-full border-b border-amber-600/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-300">
-          Wallet extension not detected. Install Freighter, xBull, or Lobstr to sign transactions.
-        </div>
-      )}
-
       <WalletContext
         value={{
           address,
