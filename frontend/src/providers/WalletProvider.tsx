@@ -26,7 +26,9 @@ function hasAnyWalletExtension(): boolean {
 }
 
 function showWalletExtensionWarning(notify: (message: string) => void) {
-  notify('Wallet extension not detected. Install Freighter, xBull, or Lobstr to sign transactions.');
+  notify(
+    'Wallet extension not detected. Install Freighter, xBull, or Lobstr to sign transactions.'
+  );
 }
 
 export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
