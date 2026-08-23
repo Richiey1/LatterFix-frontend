@@ -339,7 +339,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="h-64">
+          <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -392,7 +392,7 @@ export default function Home() {
           </div>
           {taskDistribution.length > 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
-              <div className="h-44 w-full">
+              <div className="chart-container">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie

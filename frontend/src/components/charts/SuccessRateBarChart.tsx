@@ -31,7 +31,7 @@ const getBarColor = (status: string) => {
 
 const SuccessRateBarChart: React.FC<Props> = ({ data }) => {
   return (
-    <div className="h-[300px] w-full bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+    <div className="chart-container bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
       <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">
         Transaction Status
       </h3>

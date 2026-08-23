@@ -10,7 +10,7 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 const CurrencyPieChart: React.FC<Props> = ({ data }) => {
   return (
-    <div className="h-[300px] w-full bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+    <div className="chart-container bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
       <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">
         Currency Distribution
       </h3>

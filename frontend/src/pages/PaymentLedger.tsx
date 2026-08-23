@@ -240,26 +240,27 @@ export default function PaymentHistory() {
           </div>
 
           <div className="card glass noise p-0 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            {/* Desktop Table */}
+            <div className="hidden md:block table-responsive">
+              <table className="w-full text-left border-collapse min-w-[900px]">
                 <thead>
                   <tr className="border-b border-white/5 bg-white/2 text-[10px] uppercase tracking-wider font-mono text-muted">
-                    <th className="p-4 sm:p-5">Task / Details</th>
-                    <th className="p-4 sm:p-5">Type</th>
-                    <th className="p-4 sm:p-5">Amount</th>
-                    <th className="p-4 sm:p-5">Timestamp</th>
-                    <th className="p-4 sm:p-5">Stellar Addresses</th>
-                    <th className="p-4 sm:p-5 text-right">TX Hash</th>
+                    <th className="p-4">Task / Details</th>
+                    <th className="p-4">Type</th>
+                    <th className="p-4">Amount</th>
+                    <th className="p-4">Timestamp</th>
+                    <th className="p-4">Stellar Addresses</th>
+                    <th className="p-4 text-right">TX Hash</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-xs text-white/95">
                   {filteredPayments.map((pay) => (
                     <tr key={pay.id} className="hover:bg-white/2 transition">
-                      <td className="p-4 sm:p-5 max-w-xs sm:max-w-sm">
+                      <td className="p-4 max-w-xs">
                         <p className="font-bold truncate">{pay.taskTitle}</p>
                         <p className="text-[10px] text-muted font-mono mt-0.5">Ref: {pay.taskId}</p>
                       </td>
-                      <td className="p-4 sm:p-5">
+                      <td className="p-4">
                         <span
                           className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                             pay.type === 'Payout'
@@ -272,18 +273,18 @@ export default function PaymentHistory() {
                           {pay.type}
                         </span>
                       </td>
-                      <td className="p-4 sm:p-5 font-black text-sm">
+                      <td className="p-4 font-black text-sm whitespace-nowrap">
                         {pay.amount.toLocaleString()}{' '}
                         <span className="text-[10px] font-normal text-muted">{pay.token}</span>
                       </td>
-                      <td className="p-4 sm:p-5 text-muted font-mono whitespace-nowrap">
+                      <td className="p-4 text-muted font-mono whitespace-nowrap">
                         {pay.timestamp}
                       </td>
-                      <td className="p-4 sm:p-5 font-mono text-[10px] text-muted max-w-[150px]">
+                      <td className="p-4 font-mono text-[10px] text-muted max-w-[150px]">
                         <div className="truncate">From: {pay.sender}</div>
                         <div className="truncate mt-0.5">To: {pay.recipient}</div>
                       </td>
-                      <td className="p-4 sm:p-5 text-right">
+                      <td className="p-4 text-right">
                         <a
                           href={getExplorerTxUrl(pay.txHash)}
                           target="_blank"
@@ -306,6 +307,74 @@ export default function PaymentHistory() {
                 </tbody>
               </table>
             </div>
+            {/* Mobile Card Stack */}
+            <div className="md:hidden p-4 space-y-3">
+              {filteredPayments.map((pay) => (
+                <div
+                  key={pay.id}
+                  className="bg-surface border border-border rounded-xl p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-white truncate pr-4">{pay.taskTitle}</h4>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 ${
+                        pay.type === 'Payout'
+                          ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                          : pay.type === 'Funding'
+                            ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                            : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                      }`}
+                    >
+                      {pay.type}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-muted">Ref</span>
+                      <span className="font-mono text-white">{pay.taskId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">Amount</span>
+                      <span className="font-black text-white">
+                        {pay.amount.toLocaleString()}{' '}
+                        <span className="font-normal text-muted">{pay.token}</span>
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">Time</span>
+                      <span className="font-mono text-muted">{pay.timestamp}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">From</span>
+                      <span className="font-mono text-muted truncate max-w-[120px] text-right">
+                        {pay.sender}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">To</span>
+                      <span className="font-mono text-muted truncate max-w-[120px] text-right">
+                        {pay.recipient}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted">TX</span>
+                      <a
+                        href={getExplorerTxUrl(pay.txHash)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-mono text-accent hover:underline flex items-center gap-1"
+                      >
+                        {pay.txHash.slice(0, 6)}...{pay.txHash.slice(-4)}
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredPayments.length === 0 && (
+                <div className="text-center py-10 text-muted">No transactions on this filter.</div>
+              )}
+            </div>
           </div>
         </>
       )}
@@ -324,8 +393,9 @@ export default function PaymentHistory() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+              {/* Desktop Table */}
+              <div className="hidden md:block table-responsive">
+                <table className="w-full text-left border-collapse min-w-[1000px]">
                   <thead>
                     <tr className="border-b border-white/5 bg-white/2 text-[10px] uppercase tracking-wider font-mono text-muted">
                       <th className="p-4">Ledger</th>
@@ -362,7 +432,9 @@ export default function PaymentHistory() {
                             {tx.sourceAccount.slice(0, 8)}...
                           </a>
                         </td>
-                        <td className="p-4 font-mono text-white">{tx.feeCharged}</td>
+                        <td className="p-4 font-mono text-white whitespace-nowrap">
+                          {tx.feeCharged}
+                        </td>
                         <td className="p-4 text-muted whitespace-nowrap">
                           {new Date(tx.createdAt).toLocaleString()}
                         </td>
@@ -396,12 +468,82 @@ export default function PaymentHistory() {
                   </tbody>
                 </table>
               </div>
+              {/* Mobile Card Stack */}
+              <div className="md:hidden p-4 space-y-3">
+                {onChainTxs.map((tx) => (
+                  <div
+                    key={tx.hash}
+                    className="bg-surface border border-border rounded-xl p-4 space-y-3"
+                  >
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <span className="font-mono text-muted">Ledger: #{tx.ledger}</span>
+                      <span
+                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full border uppercase shrink-0 ${
+                          tx.kind === 'soroban_invoke'
+                            ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                            : 'bg-white/5 text-muted border-white/10'
+                        }`}
+                      >
+                        {tx.label}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted">Source</span>
+                        <a
+                          href={getExplorerAccountUrl(tx.sourceAccount)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-mono text-muted truncate max-w-[120px] text-right hover:text-accent"
+                        >
+                          {tx.sourceAccount.slice(0, 8)}...
+                        </a>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Fee</span>
+                        <span className="font-mono text-white">{tx.feeCharged} stroops</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Created</span>
+                        <span className="text-muted text-right">
+                          {new Date(tx.createdAt).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Status</span>
+                        <span
+                          className={`font-bold ${tx.successful ? 'text-green-400' : 'text-red-400'}`}
+                        >
+                          {tx.successful ? '✓ Success' : '✗ Failed'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Hash</span>
+                        <a
+                          href={tx.explorerUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] font-mono text-accent hover:underline flex items-center gap-1"
+                        >
+                          {tx.hash.slice(0, 6)}...{tx.hash.slice(-4)}
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {onChainTxs.length === 0 && !onChainLoading && (
+                  <div className="text-center py-10 text-muted">
+                    No transactions found for this account on Stellar Horizon.
+                  </div>
+                )}
+              </div>
               {nextCursor && (
                 <div className="text-center p-4 border-t border-white/5">
                   <button
                     onClick={loadMore}
                     disabled={onChainLoading}
-                    className="text-xs font-bold text-accent hover:underline flex items-center gap-1.5 mx-auto disabled:opacity-40"
+                    className="text-xs font-bold text-accent hover:underline flex items-center gap-1.5 mx-auto disabled:opacity-40 btn-mobile"
                   >
                     {onChainLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                     Load more transactions
@@ -435,34 +577,69 @@ export default function PaymentHistory() {
               </span>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-white/5 bg-white/2 text-[10px] uppercase tracking-wider font-mono text-muted">
-                    <th className="p-4">Balance ID</th>
-                    <th className="p-4">Asset</th>
-                    <th className="p-4">Amount</th>
-                    <th className="p-4">Sponsor</th>
-                    <th className="p-4">Claimants</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 text-xs">
-                  {claimableBalances.map((cb) => (
-                    <tr key={cb.id} className="hover:bg-white/2 transition">
-                      <td className="p-4 font-mono text-muted">{cb.id.slice(0, 20)}...</td>
-                      <td className="p-4 font-bold text-accent">{cb.asset}</td>
-                      <td className="p-4 font-black text-white">
-                        {parseFloat(cb.amount).toFixed(4)}
-                      </td>
-                      <td className="p-4 font-mono text-muted">
-                        {cb.sponsor ? `${cb.sponsor.slice(0, 8)}...` : 'None'}
-                      </td>
-                      <td className="p-4 text-muted">{cb.claimants.length} claimant(s)</td>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block table-responsive">
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                  <thead>
+                    <tr className="border-b border-white/5 bg-white/2 text-[10px] uppercase tracking-wider font-mono text-muted">
+                      <th className="p-4">Balance ID</th>
+                      <th className="p-4">Asset</th>
+                      <th className="p-4">Amount</th>
+                      <th className="p-4">Sponsor</th>
+                      <th className="p-4">Claimants</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-xs">
+                    {claimableBalances.map((cb) => (
+                      <tr key={cb.id} className="hover:bg-white/2 transition">
+                        <td className="p-4 font-mono text-muted">{cb.id.slice(0, 20)}...</td>
+                        <td className="p-4 font-bold text-accent">{cb.asset}</td>
+                        <td className="p-4 font-black text-white">
+                          {parseFloat(cb.amount).toFixed(4)}
+                        </td>
+                        <td className="p-4 font-mono text-muted">
+                          {cb.sponsor ? `${cb.sponsor.slice(0, 8)}...` : 'None'}
+                        </td>
+                        <td className="p-4 text-muted">{cb.claimants.length} claimant(s)</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {/* Mobile Card Stack */}
+              <div className="md:hidden p-4 space-y-3">
+                {claimableBalances.map((cb) => (
+                  <div
+                    key={cb.id}
+                    className="bg-surface border border-border rounded-xl p-4 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-muted text-xs">{cb.id.slice(0, 20)}...</span>
+                      <span className="font-bold text-accent shrink-0">{cb.asset}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted">Amount</span>
+                        <span className="font-black text-white">
+                          {parseFloat(cb.amount).toFixed(4)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Sponsor</span>
+                        <span className="font-mono text-muted text-right">
+                          {cb.sponsor ? `${cb.sponsor.slice(0, 8)}...` : 'None'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Claimants</span>
+                        <span className="text-muted">{cb.claimants.length} claimant(s)</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}
