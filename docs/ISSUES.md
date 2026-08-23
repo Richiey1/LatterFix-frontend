@@ -84,9 +84,9 @@ _Focuses on project structure, database schema, payroll scheduling, and API logi
 | #056 | [Custom Tax Calculations Support](docs/issues/056-tax-calculations.md)                                |  ● MEDIUM  | ⏳ TODO |
 | #077 | [Contract Event Indexer Service](docs/issues/077-contract-event-indexer.md)                           |   ● HARD   | ⏳ TODO |
 | #078 | [Contract Address Registry API](docs/issues/078-contract-address-registry-api.md)                     |  ● MEDIUM  | ⏳ TODO |
-| #079 | [Preflight Balance Check Service](docs/issues/079-preflight-balance-check.md)                         |  ● MEDIUM  | ⏳ TODO |
-| #080 | [Transaction History Backend Integration](docs/issues/080-transaction-history-backend-integration.md) |  ● MEDIUM  | ⏳ TODO |
-| #081 | [Payroll Scheduler Backend Wiring](docs/issues/081-payroll-scheduler-backend-wiring.md)               |   ● HARD   | ⏳ TODO |
+| #041 | [Preflight Balance Check Service](docs/issues/041-preflight-balance-check.md)                         |  ● MEDIUM  | ⏳ TODO |
+| #042 | [Transaction History Backend Integration](docs/issues/042-transaction-history-backend-integration.md) |  ● MEDIUM  | ⏳ TODO |
+| #043 | [Payroll Scheduler Backend Wiring](docs/issues/043-payroll-scheduler-backend-wiring.md)               |   ● HARD   | ⏳ TODO |
 | #096 | [OAuth2 Social Login Integration Expansion](docs/issues/096-oauth2-social-login.md)                   |  ● MEDIUM  | ⏳ TODO |
 | #097 | [Add Swagger/OpenAPI Documentation](docs/issues/097-openapi-docs.md)                                  |   ● EASY   | ⏳ TODO |
 | #098 | [Implement Redis-Based Queue for Payroll](docs/issues/098-redis-queue.md)                             |   ● HARD   | ⏳ TODO |
@@ -101,37 +101,37 @@ _Focuses on dashboard layout, wallet connection, management UI, and analytics._
 
 | ID   | Issue Title                                                                               | Difficulty | Status  |
 | :--- | :---------------------------------------------------------------------------------------- | :--------: | :-----: |
-| #021 | [Scaffold React 19 + Vite Project](docs/issues/021-react-vite-setup.md)                   |  ● MEDIUM  | ⏳ TODO |
-| #022 | [Build Employer Dashboard Layout](docs/issues/022-dashboard-layout.md)                    |   ● EASY   | ⏳ TODO |
-| #023 | [Implement Wallet Connect Flow](docs/issues/023-wallet-connect-ui.md)                     |   ● HARD   | ⏳ TODO |
-| #024 | [Build Employee Management Table](docs/issues/024-employee-table-ui.md)                   |  ● MEDIUM  | ⏳ TODO |
-| #025 | [Build CSV Upload UI](docs/issues/025-csv-upload-ui.md)                                   |  ● MEDIUM  | ⏳ TODO |
-| #026 | [Build Payroll Analytics Dashboard](docs/issues/026-analytics-dashboard.md)               |   ● HARD   | ⏳ TODO |
-| #027 | [Build Employee Portal History View](docs/issues/027-employee-portal.md)                  |   ● EASY   | ⏳ TODO |
-| #028 | [Implement QR Code Onboarding](docs/issues/028-employee-onboarding-ui.md)                 |  ● MEDIUM  | ⏳ TODO |
-| #029 | [Add Toast Notification System](docs/issues/029-toast-notification-system.md)             |   ● EASY   | ⏳ TODO |
-| #030 | [Build Payroll Scheduling Config UI](docs/issues/030-payroll-scheduling-ui.md)            |   ● HARD   | ⏳ TODO |
-| #057 | [Theme Switcher (Light/Dark Mode)](docs/issues/057-theme-switcher.md)                     |   ● EASY   | ⏳ TODO |
-| #058 | [Multi-language Support (i18n)](docs/issues/058-multi-language-support.md)                |  ● MEDIUM  | ⏳ TODO |
-| #059 | [Interactive Onboarding Tour](docs/issues/059-interactive-onboarding.md)                  |  ● MEDIUM  | ⏳ TODO |
-| #060 | [Advanced Filter UI for Transactions](docs/issues/060-advanced-filter-ui.md)              |  ● MEDIUM  | ⏳ TODO |
-| #061 | [WebSocket Integration for Real-time Updates](docs/issues/061-websocket-integration.md)   |   ● HARD   | ⏳ TODO |
-| #062 | [Organization Settings Page](docs/issues/062-org-settings-page.md)                        |   ● EASY   | ⏳ TODO |
-| #063 | [Custom Report Builder UI](docs/issues/063-custom-report-builder.md)                      |   ● HARD   | ⏳ TODO |
-| #064 | [Drag-and-Drop Employee Reordering](docs/issues/064-employee-reordering.md)               |   ● EASY   | ⏳ TODO |
-| #065 | [Session Timeout Warnings](docs/issues/065-session-timeout-ui.md)                         |   ● EASY   | ⏳ TODO |
-| #066 | [Mobile Responsive Optimization](docs/issues/066-mobile-responsive.md)                    |  ● MEDIUM  | ⏳ TODO |
-| #067 | [Profile Pictures / Gravatar Support](docs/issues/067-profile-pictures.md)                |   ● EASY   | ⏳ TODO |
-| #068 | [Interactive Documentation Page](docs/issues/068-documentation-page.md)                   |  ● MEDIUM  | ⏳ TODO |
-| #069 | [Form Autosave for Configurations](docs/issues/069-form-autosave.md)                      |  ● MEDIUM  | ⏳ TODO |
-| #070 | [Error Boundaries & Crash Reporting](docs/issues/070-error-boundaries.md)                 |  ● MEDIUM  | ⏳ TODO |
-| #071 | [Soroban Contract Invocation Hook](docs/issues/071-soroban-contract-invocation-hook.md)   |   ● HARD   | ⏳ TODO |
-| #072 | [Vesting Escrow UI Component](docs/issues/072-vesting-escrow-ui.md)                       |  ● MEDIUM  | ⏳ TODO |
-| #073 | [Bulk Payment Status Tracker](docs/issues/073-bulk-payment-status-tracker.md)             |  ● MEDIUM  | ⏳ TODO |
-| #074 | [Revenue Split Dashboard](docs/issues/074-revenue-split-dashboard.md)                     |   ● HARD   | ⏳ TODO |
-| #075 | [Cross-Asset Payment Integration](docs/issues/075-cross-asset-payment-integration.md)     |   ● HARD   | ⏳ TODO |
-| #076 | [Wallet Session Persistence](docs/issues/076-wallet-session-persistence.md)               |  ● MEDIUM  | ⏳ TODO |
-| #082 | [Contract Error Parsing UI](docs/issues/082-contract-error-parsing-ui.md)                 |  ● MEDIUM  | ⏳ TODO |
-| #083 | [Employee Payout Claim Integration](docs/issues/083-employee-payout-claim-integration.md) |   ● HARD   | ⏳ TODO |
-| #084 | [Contract Upgrade Migration UI](docs/issues/084-contract-upgrade-migration-ui.md)         |   ● HARD   | ⏳ TODO |
-| #085 | [Network Switch (Testnet/Mainnet)](docs/issues/085-network-switch-testnet-mainnet.md)     |  ● MEDIUM  | ⏳ TODO |
+| #011 | [Scaffold React 19 + Vite Project](docs/issues/011-react-vite-setup.md)                   |  ● MEDIUM  | ⏳ TODO |
+| #012 | [Build Employer Dashboard Layout](docs/issues/012-dashboard-layout.md)                    |   ● EASY   | ⏳ TODO |
+| #013 | [Implement Wallet Connect Flow](docs/issues/013-wallet-connect-ui.md)                     |   ● HARD   | ⏳ TODO |
+| #014 | [Build Employee Management Table](docs/issues/014-employee-table-ui.md)                   |  ● MEDIUM  | ⏳ TODO |
+| #015 | [Build CSV Upload UI](docs/issues/015-csv-upload-ui.md)                                   |  ● MEDIUM  | ⏳ TODO |
+| #016 | [Build Payroll Analytics Dashboard](docs/issues/016-analytics-dashboard.md)               |   ● HARD   | ⏳ TODO |
+| #017 | [Build Employee Portal History View](docs/issues/017-employee-portal.md)                  |   ● EASY   | ⏳ TODO |
+| #018 | [Implement QR Code Onboarding](docs/issues/018-employee-onboarding-ui.md)                 |  ● MEDIUM  | ⏳ TODO |
+| #019 | [Add Toast Notification System](docs/issues/019-toast-notification-system.md)             |   ● EASY   | ⏳ TODO |
+| #020 | [Build Payroll Scheduling Config UI](docs/issues/020-payroll-scheduling-ui.md)            |   ● HARD   | ⏳ TODO |
+| #021 | [Theme Switcher (Light/Dark Mode)](docs/issues/021-theme-switcher.md)                     |   ● EASY   | ⏳ TODO |
+| #022 | [Multi-language Support (i18n)](docs/issues/022-multi-language-support.md)                |  ● MEDIUM  | ⏳ TODO |
+| #023 | [Interactive Onboarding Tour](docs/issues/023-interactive-onboarding.md)                  |  ● MEDIUM  | ⏳ TODO |
+| #024 | [Advanced Filter UI for Transactions](docs/issues/024-advanced-filter-ui.md)              |  ● MEDIUM  | ⏳ TODO |
+| #025 | [WebSocket Integration for Real-time Updates](docs/issues/025-websocket-integration.md)   |   ● HARD   | ⏳ TODO |
+| #026 | [Organization Settings Page](docs/issues/026-org-settings-page.md)                        |   ● EASY   | ⏳ TODO |
+| #027 | [Custom Report Builder UI](docs/issues/027-custom-report-builder.md)                      |   ● HARD   | ⏳ TODO |
+| #028 | [Drag-and-Drop Employee Reordering](docs/issues/028-employee-reordering.md)               |   ● EASY   | ⏳ TODO |
+| #029 | [Session Timeout Warnings](docs/issues/029-session-timeout-ui.md)                         |   ● EASY   | ⏳ TODO |
+| #030 | [Mobile Responsive Optimization](docs/issues/030-mobile-responsive.md)                    |  ● MEDIUM  | ⏳ TODO |
+| #031 | [Profile Pictures / Gravatar Support](docs/issues/031-profile-pictures.md)                |   ● EASY   | ⏳ TODO |
+| #032 | [Interactive Documentation Page](docs/issues/032-documentation-page.md)                   |  ● MEDIUM  | ⏳ TODO |
+| #033 | [Form Autosave for Configurations](docs/issues/033-form-autosave.md)                      |  ● MEDIUM  | ⏳ TODO |
+| #034 | [Error Boundaries & Crash Reporting](docs/issues/034-error-boundaries.md)                 |  ● MEDIUM  | ⏳ TODO |
+| #035 | [Soroban Contract Invocation Hook](docs/issues/035-soroban-contract-invocation-hook.md)   |   ● HARD   | ⏳ TODO |
+| #036 | [Vesting Escrow UI Component](docs/issues/036-vesting-escrow-ui.md)                       |  ● MEDIUM  | ⏳ TODO |
+| #037 | [Bulk Payment Status Tracker](docs/issues/037-bulk-payment-status-tracker.md)             |  ● MEDIUM  | ⏳ TODO |
+| #038 | [Revenue Split Dashboard](docs/issues/038-revenue-split-dashboard.md)                     |   ● HARD   | ⏳ TODO |
+| #039 | [Cross-Asset Payment Integration](docs/issues/039-cross-asset-payment-integration.md)     |   ● HARD   | ⏳ TODO |
+| #040 | [Wallet Session Persistence](docs/issues/040-wallet-session-persistence.md)               |  ● MEDIUM  | ⏳ TODO |
+| #044 | [Contract Error Parsing UI](docs/issues/044-contract-error-parsing-ui.md)                 |  ● MEDIUM  | ⏳ TODO |
+| #045 | [Employee Payout Claim Integration](docs/issues/045-employee-payout-claim-integration.md) |   ● HARD   | ⏳ TODO |
+| #046 | [Contract Upgrade Migration UI](docs/issues/046-contract-upgrade-migration-ui.md)         |   ● HARD   | ⏳ TODO |
+| #047 | [Network Switch (Testnet/Mainnet)](docs/issues/047-network-switch-testnet-mainnet.md)     |  ● MEDIUM  | ⏳ TODO |
