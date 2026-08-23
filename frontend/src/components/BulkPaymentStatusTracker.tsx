@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNotification } from '../hooks/useNotification';
-import { useSocket } from '../hooks/useSocket';
+import { useRealTimeUpdates } from '../hooks/useRealTimeUpdates';
 import {
   fetchPayrollRuns,
   fetchPayrollRunSummary,
@@ -9,6 +9,7 @@ import {
   type PayrollRunRecord,
   type PayrollRunSummary,
 } from '../services/bulkPaymentStatus';
+import { ConnectionStatusIndicator } from './ConnectionStatusIndicator';
 
 const RETRY_UNAVAILABLE_REASON =
   'Retrying a failed recipient requires a backend endpoint that resubmits only the failed items. That endpoint does not exist yet — re-running the batch would also re-pay recipients who already succeeded.';
@@ -79,7 +80,18 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
   const [error, setError] = useState<string | null>(null);
 
   const { notifyError } = useNotification();
-  const { socket } = useSocket();
+  
+  // Use unified real-time updates hook
+  const { 
+    isConnected, 
+    isPolling, 
+    subscribeToTransaction,
+    forceRefresh,
+  } = useRealTimeUpdates({
+    enablePollingFallback: true,
+    showNotifications: true,
+    pollingInterval: 10000, // Poll every 10 seconds for bulk payment status
+  });
 
   const loadRuns = useCallback(async () => {
     setIsLoading(true);
@@ -117,33 +129,21 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
     [notifyError, summaries]
   );
 
+  // Subscribe to bulk payment updates via WebSocket
   useEffect(() => {
-    if (!socket) return;
-
-    const onBulkConfirmation = (payload: unknown) => {
-      const normalized = normalizeConfirmationPayload(payload);
-      if (!normalized.batchId || normalized.confirmations === null) return;
-      setConfirmations((prev) => ({
-        ...prev,
-        [normalized.batchId as string]: normalized.confirmations as number,
-      }));
-    };
-
-    socket.on('bulk:confirmation', onBulkConfirmation);
-    socket.on('bulk_payment:confirmation', onBulkConfirmation);
-
     runs.forEach((run) => {
-      socket.emit('subscribe:bulk', { batchId: run.batch_id });
+      // Subscribe to each batch for real-time confirmation updates
+      subscribeToTransaction(run.batch_id);
     });
+  }, [runs, subscribeToTransaction]);
 
-    return () => {
-      socket.off('bulk:confirmation', onBulkConfirmation);
-      socket.off('bulk_payment:confirmation', onBulkConfirmation);
-      runs.forEach((run) => {
-        socket.emit('unsubscribe:bulk', { batchId: run.batch_id });
-      });
-    };
-  }, [runs, socket]);
+  // Handle manual refresh with force polling if needed
+  const handleRefresh = useCallback(async () => {
+    await loadRuns();
+    if (isPolling) {
+      await forceRefresh();
+    }
+  }, [loadRuns, isPolling, forceRefresh]);
 
   const handleToggleExpand = async (runId: number) => {
     if (expandedRunId === runId) {
@@ -153,6 +153,23 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
     setExpandedRunId(runId);
     await loadSummary(runId);
   };
+
+  // Listen for bulk confirmation events from the store
+  useEffect(() => {
+    const handleBulkConfirmation = (event: CustomEvent<{ batchId: string; confirmations: number }>) => {
+      const { batchId, confirmations: count } = event.detail;
+      setConfirmations((prev) => ({
+        ...prev,
+        [batchId]: count,
+      }));
+    };
+
+    window.addEventListener('bulk:confirmation', handleBulkConfirmation as EventListener);
+    
+    return () => {
+      window.removeEventListener('bulk:confirmation', handleBulkConfirmation as EventListener);
+    };
+  }, []);
 
   const rows = useMemo(() => {
     return runs.map((run) => {
@@ -176,11 +193,14 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
   return (
     <div className="card glass noise mt-8">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-bold">Bulk Payment Status Tracker</h3>
+        <div className="flex items-center gap-4">
+          <h3 className="text-lg font-bold">Bulk Payment Status Tracker</h3>
+          <ConnectionStatusIndicator />
+        </div>
         <button
           type="button"
           onClick={() => {
-            void loadRuns();
+            void handleRefresh();
           }}
           className="text-xs font-semibold text-accent hover:text-accent/80"
         >
