@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { usePollingFallback } from '../usePollingFallback';
 import { useTransactionStore } from '../../stores/transactionStore';
 
@@ -43,7 +43,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.startPolling();
       vi.advanceTimersByTime(100);
     });
@@ -62,7 +62,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.startPolling();
     });
 
@@ -73,7 +73,7 @@ describe('usePollingFallback', () => {
       useTransactionStore.getState().setWsConnected(true);
     });
 
-    await act(async () => {
+    await act(() => {
       result.current.stopPolling();
     });
 
@@ -95,13 +95,13 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.startPolling();
       vi.advanceTimersByTime(100);
     });
 
     // First poll fails, should schedule with backoff
-    await act(async () => {
+    await act(() => {
       vi.advanceTimersByTime(1000);
     });
 
@@ -118,7 +118,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.startPolling();
       vi.advanceTimersByTime(100);
     });
@@ -140,7 +140,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       vi.advanceTimersByTime(100);
     });
 
@@ -157,7 +157,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       vi.advanceTimersByTime(100);
     });
 
@@ -179,13 +179,13 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(async () => {
+    await act(() => {
       result.current.startPolling();
     });
 
     // Simulate multiple failed polls
     for (let i = 0; i < 5; i++) {
-      await act(async () => {
+      await act(() => {
         vi.advanceTimersByTime(1000);
       });
     }

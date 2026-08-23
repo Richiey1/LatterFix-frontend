@@ -105,13 +105,13 @@ describe('SocketProvider', () => {
     const connectHandler = mockSocket.on.mock.calls.find(
       (call) => call[0] === 'connect'
     )?.[1];
-    act(() => connectHandler?.());
+    act(() => { void connectHandler?.(); });
 
     // Then disconnect
     const disconnectHandler = mockSocket.on.mock.calls.find(
       (call) => call[0] === 'disconnect'
     )?.[1];
-    act(() => disconnectHandler?.('transport close'));
+    act(() => { void disconnectHandler?.('transport close'); });
 
     await waitFor(() => {
       expect(result.current.connected).toBe(false);
@@ -127,7 +127,7 @@ describe('SocketProvider', () => {
     const connectHandler = mockSocket.on.mock.calls.find(
       (call) => call[0] === 'connect'
     )?.[1];
-    act(() => connectHandler?.());
+    act(() => { void connectHandler?.(); });
 
     await waitFor(() => {
       expect(result.current.connected).toBe(true);
@@ -148,7 +148,7 @@ describe('SocketProvider', () => {
     const connectHandler = mockSocket.on.mock.calls.find(
       (call) => call[0] === 'connect'
     )?.[1];
-    act(() => connectHandler?.());
+    act(() => { void connectHandler?.(); });
 
     await waitFor(() => {
       expect(result.current.connected).toBe(true);
@@ -173,7 +173,7 @@ describe('SocketProvider', () => {
 
     // Simulate 10 connection errors
     for (let i = 0; i < 10; i++) {
-      act(() => errorHandler?.(new Error('Connection failed')));
+      act(() => { void errorHandler?.(new Error('Connection failed')); });
     }
 
     await waitFor(() => {

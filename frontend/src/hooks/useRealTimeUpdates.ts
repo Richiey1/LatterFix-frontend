@@ -14,7 +14,6 @@
 import { useCallback, useEffect } from 'react';
 import { useTransactionUpdates } from './useTransactionUpdates';
 import { usePollingFallback } from './usePollingFallback';
-import { useTransactionStore } from '../stores/transactionStore';
 import type { TransactionUpdate, PaymentMilestone, BalanceUpdate } from '../stores/transactionStore';
 
 export interface UseRealTimeUpdatesOptions {
@@ -69,7 +68,7 @@ export function useRealTimeUpdates(
   });
 
   // Set up polling fallback
-  const { forcePollNow, startPolling, stopPolling } = usePollingFallback({
+  const { forcePollNow, startPolling } = usePollingFallback({
     config: {
       enabled: enablePollingFallback,
       interval: pollingInterval,

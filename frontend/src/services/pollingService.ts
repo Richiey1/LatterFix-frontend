@@ -56,7 +56,7 @@ export async function pollTransactionStatusBatch(
       { transactionIds }
     );
     return response.data;
-  } catch (error) {
+  } catch (_error) {
     // Batch endpoint not available, fall back to individual requests
     console.warn('Batch status endpoint unavailable, using individual requests');
     
@@ -85,7 +85,11 @@ export async function pollAccountBalance(
   }>;
   timestamp: string;
 }> {
-  const response = await axios.get(
+  const response = await axios.get<{
+    address: string;
+    balances: Array<{ asset: string; balance: string }>;
+    timestamp: string;
+  }>(
     `${API_BASE_URL}/api/accounts/${address}/balance`
   );
   return response.data;
@@ -103,7 +107,13 @@ export async function pollPaymentMilestones(
   timestamp: string;
   data?: Record<string, unknown>;
 }>> {
-  const response = await axios.get(
+  const response = await axios.get<Array<{
+    id: string;
+    type: string;
+    transactionId: string;
+    timestamp: string;
+    data?: Record<string, unknown>;
+  }>>(
     `${API_BASE_URL}/api/transactions/${transactionId}/milestones`
   );
   return response.data;

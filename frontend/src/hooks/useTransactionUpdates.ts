@@ -11,7 +11,7 @@
  * - Balance change notifications
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSocket } from './useSocket';
 import { useNotification } from './useNotification';
 import {

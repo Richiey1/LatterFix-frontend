@@ -146,5 +146,5 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
 
   setIsPolling: (polling) => {
     set({ isPolling: polling });
-  }),
+  },
 }));

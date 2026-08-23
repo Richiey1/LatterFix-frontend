@@ -40,36 +40,6 @@ function findRunTxHash(summary?: PayrollRunSummary): string | null {
   return txHash || null;
 }
 
-function normalizeConfirmationPayload(payload: unknown): {
-  batchId: string | null;
-  confirmations: number | null;
-} {
-  if (!payload || typeof payload !== 'object') {
-    return { batchId: null, confirmations: null };
-  }
-
-  const record = payload as Record<string, unknown>;
-  const batchId =
-    (record.batchId as string | undefined) ||
-    (record.batch_id as string | undefined) ||
-    (record.runId as string | undefined) ||
-    null;
-
-  const countRaw =
-    record.confirmations ?? record.confirmationCount ?? record.confirmed ?? record.count ?? null;
-
-  const count =
-    typeof countRaw === 'number'
-      ? countRaw
-      : typeof countRaw === 'string'
-        ? Number.parseInt(countRaw, 10)
-        : null;
-
-  return {
-    batchId,
-    confirmations: Number.isFinite(count) ? count : null,
-  };
-}
 
 export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTrackerProps) {
   const [runs, setRuns] = useState<PayrollRunRecord[]>([]);
@@ -83,7 +53,6 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
   
   // Use unified real-time updates hook
   const { 
-    isConnected, 
     isPolling, 
     subscribeToTransaction,
     forceRefresh,
