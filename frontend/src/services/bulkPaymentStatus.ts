@@ -16,6 +16,7 @@ export interface PayrollRecipientStatus {
   employee_first_name?: string;
   employee_last_name?: string;
   employee_email?: string;
+  wallet_address?: string;
   amount: string;
   status: 'pending' | 'completed' | 'failed';
   tx_hash?: string;
