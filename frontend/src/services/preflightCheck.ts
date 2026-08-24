@@ -28,25 +28,29 @@ export async function runPreflightCheck(
     // 1. Check Org Wallet balances
     const orgAccount = await loadAccount(orgPublicKey);
     const xlmBalance = orgAccount.balances.find((b) => b.isNative)?.balance || '0';
-    
+
     // Estimate fees for the batch
     const budget = await estimateBatchPaymentBudget(recipients.length);
-    
+
     let requiredXlm = new BigNumber(budget.totalBudgetXlm);
-    
+
     if (assetCode === 'XLM') {
       requiredXlm = requiredXlm.plus(totalAmount);
     } else {
-      const assetBalance = orgAccount.balances.find(
-        (b) => b.assetCode === assetCode && b.assetIssuer === assetIssuer
-      )?.balance || '0';
+      const assetBalance =
+        orgAccount.balances.find((b) => b.assetCode === assetCode && b.assetIssuer === assetIssuer)
+          ?.balance || '0';
       if (new BigNumber(assetBalance).lt(totalAmount)) {
-        orgIssues.push(`Insufficient ${assetCode} balance. Required: ${totalAmount}, Available: ${assetBalance}`);
+        orgIssues.push(
+          `Insufficient ${assetCode} balance. Required: ${totalAmount}, Available: ${assetBalance}`
+        );
       }
     }
 
     if (new BigNumber(xlmBalance).lt(requiredXlm)) {
-      orgIssues.push(`Insufficient XLM balance for fees and reserves. Required: ${requiredXlm.toString()}, Available: ${xlmBalance}`);
+      orgIssues.push(
+        `Insufficient XLM balance for fees and reserves. Required: ${requiredXlm.toString()}, Available: ${xlmBalance}`
+      );
     }
 
     // 2. Check each recipient
@@ -62,7 +66,7 @@ export async function runPreflightCheck(
 
       try {
         await loadAccount(dest);
-        
+
         // If it's not XLM, check trustline
         if (assetCode !== 'XLM') {
           const hasTrust = await hasTrustline(dest, assetCode, assetIssuer || '');

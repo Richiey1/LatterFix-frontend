@@ -284,9 +284,7 @@ function FragmentRow({
 
   const handleDownloadCsv = () => {
     if (!preflightResult) return;
-    const rows = [
-      ['Employee ID', 'Name', 'Email', 'Amount', 'Failure Reason'],
-    ];
+    const rows = [['Employee ID', 'Name', 'Email', 'Amount', 'Failure Reason']];
     summary?.items.forEach((item) => {
       const issue = preflightResult.recipientIssues.find((i) => i.employee_id === item.employee_id);
       if (issue) {
@@ -421,7 +419,9 @@ function FragmentRow({
                           disabled={isPreflighting}
                           className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded bg-white/5 hover:bg-white/10 disabled:opacity-50"
                         >
-                          <RefreshCw className={`w-3.5 h-3.5 ${isPreflighting ? 'animate-spin' : ''}`} />
+                          <RefreshCw
+                            className={`w-3.5 h-3.5 ${isPreflighting ? 'animate-spin' : ''}`}
+                          />
                           Re-run Checks
                         </button>
                         {preflightResult && !preflightResult.isReady && (
@@ -434,9 +434,7 @@ function FragmentRow({
                           </button>
                         )}
                         {preflightResult?.isReady && (
-                          <button
-                            className="flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded bg-accent text-bg hover:brightness-110 shadow-lg shadow-accent/20"
-                          >
+                          <button className="flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded bg-accent text-bg hover:brightness-110 shadow-lg shadow-accent/20">
                             <PlayCircle className="w-3.5 h-3.5" />
                             Execute Payroll
                           </button>
@@ -446,7 +444,9 @@ function FragmentRow({
                     {/* Org Level Issues */}
                     {preflightResult?.orgIssues && preflightResult.orgIssues.length > 0 && (
                       <div className="mt-3 p-3 bg-red-500/20 rounded border border-red-500/30">
-                        <h5 className="text-xs font-bold text-red-400 mb-2">Organization Wallet Issues:</h5>
+                        <h5 className="text-xs font-bold text-red-400 mb-2">
+                          Organization Wallet Issues:
+                        </h5>
                         <ul className="list-disc list-inside text-xs text-red-300 space-y-1">
                           {preflightResult.orgIssues.map((issue, idx) => (
                             <li key={idx}>{issue}</li>
@@ -484,7 +484,8 @@ function FragmentRow({
                             </div>
                           </div>
                           <div className="font-mono">
-                            {recipient.amount} <span className="text-muted text-xs">{run.asset_code}</span>
+                            {recipient.amount}{' '}
+                            <span className="text-muted text-xs">{run.asset_code}</span>
                           </div>
                           <div>
                             <span className="capitalize text-xs font-medium px-2 py-1 rounded bg-white/5">
@@ -496,7 +497,9 @@ function FragmentRow({
                               issue ? (
                                 <span className="text-xs text-red-400 flex items-center gap-1.5 bg-red-500/10 px-2 py-1 rounded">
                                   <AlertTriangle className="w-3 h-3 shrink-0" />
-                                  <span className="truncate" title={issue.reason}>{issue.reason}</span>
+                                  <span className="truncate" title={issue.reason}>
+                                    {issue.reason}
+                                  </span>
                                 </span>
                               ) : (
                                 <span className="text-xs text-green-400 flex items-center gap-1">
