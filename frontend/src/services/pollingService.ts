@@ -59,14 +59,12 @@ export async function pollTransactionStatusBatch(
   } catch {
     // Batch endpoint not available, fall back to individual requests
     console.warn('Batch status endpoint unavailable, using individual requests');
-    
-    const results = await Promise.allSettled(
-      transactionIds.map((id) => pollTransactionStatus(id))
-    );
+
+    const results = await Promise.allSettled(transactionIds.map((id) => pollTransactionStatus(id)));
 
     return results
-      .filter((r): r is PromiseFulfilledResult<TransactionStatusResponse> => 
-        r.status === 'fulfilled'
+      .filter(
+        (r): r is PromiseFulfilledResult<TransactionStatusResponse> => r.status === 'fulfilled'
       )
       .map((r) => r.value);
   }
@@ -75,9 +73,7 @@ export async function pollTransactionStatusBatch(
 /**
  * Poll for balance updates for an account
  */
-export async function pollAccountBalance(
-  address: string
-): Promise<{
+export async function pollAccountBalance(address: string): Promise<{
   address: string;
   balances: Array<{
     asset: string;
@@ -89,32 +85,30 @@ export async function pollAccountBalance(
     address: string;
     balances: Array<{ asset: string; balance: string }>;
     timestamp: string;
-  }>(
-    `${API_BASE_URL}/api/accounts/${address}/balance`
-  );
+  }>(`${API_BASE_URL}/api/accounts/${address}/balance`);
   return response.data;
 }
 
 /**
  * Poll for payment milestone updates
  */
-export async function pollPaymentMilestones(
-  transactionId: string
-): Promise<Array<{
-  id: string;
-  type: string;
-  transactionId: string;
-  timestamp: string;
-  data?: Record<string, unknown>;
-}>> {
-  const response = await axios.get<Array<{
+export async function pollPaymentMilestones(transactionId: string): Promise<
+  Array<{
     id: string;
     type: string;
     transactionId: string;
     timestamp: string;
     data?: Record<string, unknown>;
-  }>>(
-    `${API_BASE_URL}/api/transactions/${transactionId}/milestones`
-  );
+  }>
+> {
+  const response = await axios.get<
+    Array<{
+      id: string;
+      type: string;
+      transactionId: string;
+      timestamp: string;
+      data?: Record<string, unknown>;
+    }>
+  >(`${API_BASE_URL}/api/transactions/${transactionId}/milestones`);
   return response.data;
 }

@@ -54,7 +54,13 @@ export const ConnectionStatusIndicator: React.FC = () => {
   return (
     <div
       className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${status.colorClass} ${status.bgClass}`}
-      title={wsConnected ? 'WebSocket connected' : isPolling ? 'Using HTTP polling fallback' : 'Connection lost'}
+      title={
+        wsConnected
+          ? 'WebSocket connected'
+          : isPolling
+            ? 'Using HTTP polling fallback'
+            : 'Connection lost'
+      }
     >
       {status.icon}
       <span>{status.text}</span>

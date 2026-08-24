@@ -20,7 +20,7 @@ describe('usePollingFallback', () => {
     vi.useFakeTimers();
     vi.clearAllMocks();
     vi.clearAllTimers();
-    
+
     // Reset store
     useTransactionStore.setState({
       transactions: new Map(),
@@ -112,7 +112,7 @@ describe('usePollingFallback', () => {
 
   it('should allow force poll now', async () => {
     const { pollTransactionStatusBatch } = await import('../../services/pollingService');
-    
+
     const { result } = renderHook(() =>
       usePollingFallback({
         config: { enabled: true },

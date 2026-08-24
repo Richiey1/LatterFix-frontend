@@ -40,7 +40,6 @@ function findRunTxHash(summary?: PayrollRunSummary): string | null {
   return txHash || null;
 }
 
-
 export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTrackerProps) {
   const [runs, setRuns] = useState<PayrollRunRecord[]>([]);
   const [summaries, setSummaries] = useState<Record<number, PayrollRunSummary>>({});
@@ -50,13 +49,9 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
   const [error, setError] = useState<string | null>(null);
 
   const { notifyError } = useNotification();
-  
+
   // Use unified real-time updates hook
-  const { 
-    isPolling, 
-    subscribeToTransaction,
-    forceRefresh,
-  } = useRealTimeUpdates({
+  const { isPolling, subscribeToTransaction, forceRefresh } = useRealTimeUpdates({
     enablePollingFallback: true,
     showNotifications: true,
     pollingInterval: 10000, // Poll every 10 seconds for bulk payment status
@@ -125,7 +120,9 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
 
   // Listen for bulk confirmation events from the store
   useEffect(() => {
-    const handleBulkConfirmation = (event: CustomEvent<{ batchId: string; confirmations: number }>) => {
+    const handleBulkConfirmation = (
+      event: CustomEvent<{ batchId: string; confirmations: number }>
+    ) => {
       const { batchId, confirmations: count } = event.detail;
       setConfirmations((prev) => ({
         ...prev,
@@ -134,7 +131,7 @@ export function BulkPaymentStatusTracker({ organizationId }: BulkPaymentStatusTr
     };
 
     window.addEventListener('bulk:confirmation', handleBulkConfirmation as EventListener);
-    
+
     return () => {
       window.removeEventListener('bulk:confirmation', handleBulkConfirmation as EventListener);
     };

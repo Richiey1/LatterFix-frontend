@@ -27,7 +27,12 @@ export interface TransactionUpdate {
 
 export interface PaymentMilestone {
   id: string;
-  type: 'payment_initiated' | 'payment_submitted' | 'payment_confirming' | 'payment_confirmed' | 'payment_failed';
+  type:
+    | 'payment_initiated'
+    | 'payment_submitted'
+    | 'payment_confirming'
+    | 'payment_confirmed'
+    | 'payment_failed';
   transactionId: string;
   amount?: string;
   asset?: string;

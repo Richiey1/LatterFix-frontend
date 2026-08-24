@@ -48,16 +48,19 @@ export function usePollingFallback(
 ): UsePollingFallbackReturn {
   const { config: userConfig, getSubscribedTransactionIds } = options;
 
-  const config = useMemo(() => ({
-    ...DEFAULT_CONFIG,
-    ...userConfig,
-  }), [
-    userConfig?.enabled,
-    userConfig?.interval,
-    userConfig?.maxInterval,
-    userConfig?.backoffMultiplier,
-    userConfig?.maxRetries,
-  ]);
+  const config = useMemo(
+    () => ({
+      ...DEFAULT_CONFIG,
+      ...userConfig,
+    }),
+    [
+      userConfig?.enabled,
+      userConfig?.interval,
+      userConfig?.maxInterval,
+      userConfig?.backoffMultiplier,
+      userConfig?.maxRetries,
+    ]
+  );
 
   const pollingIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryCountRef = useRef(0);
@@ -158,13 +161,14 @@ export function usePollingFallback(
       // Schedule next poll
       if (isPollingRef.current && !wsConnected) {
         const interval = getCurrentInterval();
-        pollingIntervalRef.current = setTimeout(() => { void poll(); }, interval);
+        pollingIntervalRef.current = setTimeout(() => {
+          void poll();
+        }, interval);
       }
     };
 
     void poll();
   }, [wsConnected, setIsPolling, setWsReconnecting, executePoll, getCurrentInterval]);
-
 
   // Force immediate poll (useful for user-initiated refresh)
   const forcePollNow = useCallback(async () => {

@@ -14,7 +14,11 @@
 import { useCallback, useEffect } from 'react';
 import { useTransactionUpdates } from './useTransactionUpdates';
 import { usePollingFallback } from './usePollingFallback';
-import type { TransactionUpdate, PaymentMilestone, BalanceUpdate } from '../stores/transactionStore';
+import type {
+  TransactionUpdate,
+  PaymentMilestone,
+  BalanceUpdate,
+} from '../stores/transactionStore';
 
 export interface UseRealTimeUpdatesOptions {
   enablePollingFallback?: boolean;

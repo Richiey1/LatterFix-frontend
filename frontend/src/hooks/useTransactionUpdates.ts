@@ -89,9 +89,15 @@ export function useTransactionUpdates(
 
       if (showNotifications) {
         if (data.status === 'confirmed') {
-          notifySuccess('Transaction Confirmed', data.message || 'Your transaction has been confirmed on-chain');
+          notifySuccess(
+            'Transaction Confirmed',
+            data.message || 'Your transaction has been confirmed on-chain'
+          );
         } else if (data.status === 'failed') {
-          notifyError('Transaction Failed', data.message || 'Your transaction could not be processed');
+          notifyError(
+            'Transaction Failed',
+            data.message || 'Your transaction could not be processed'
+          );
         }
       }
     };
@@ -123,10 +129,7 @@ export function useTransactionUpdates(
 
       if (showNotifications) {
         const changeSign = parseFloat(data.change) >= 0 ? '+' : '';
-        notifySuccess(
-          'Balance Updated',
-          `${data.asset}: ${changeSign}${data.change}`
-        );
+        notifySuccess('Balance Updated', `${data.asset}: ${changeSign}${data.change}`);
       }
     };
 
@@ -141,7 +144,8 @@ export function useTransactionUpdates(
         updateTransaction({
           ...existing,
           confirmations: data.confirmations,
-          status: data.confirmations >= (data.requiredConfirmations || 1) ? 'confirmed' : 'confirming',
+          status:
+            data.confirmations >= (data.requiredConfirmations || 1) ? 'confirmed' : 'confirming',
         });
       }
     };
