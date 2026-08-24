@@ -7,6 +7,7 @@ export interface PayrollRunRecord {
   status: 'draft' | 'pending' | 'processing' | 'completed' | 'failed';
   total_amount: string;
   asset_code: string;
+  asset_issuer?: string;
   created_at: string;
 }
 

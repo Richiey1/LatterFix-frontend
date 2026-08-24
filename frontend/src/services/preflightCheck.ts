@@ -32,7 +32,7 @@ export async function runPreflightCheck(
     // Estimate fees for the batch
     const budget = await estimateBatchPaymentBudget(recipients.length);
 
-    let requiredXlm = new BigNumber(budget.totalBudgetXlm);
+    let requiredXlm = new BigNumber(budget.totalBudgetXLM);
 
     if (assetCode === 'XLM') {
       requiredXlm = requiredXlm.plus(totalAmount);
