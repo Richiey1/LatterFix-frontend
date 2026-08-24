@@ -56,7 +56,7 @@ export async function pollTransactionStatusBatch(
       { transactionIds }
     );
     return response.data;
-  } catch (_error) {
+  } catch {
     // Batch endpoint not available, fall back to individual requests
     console.warn('Batch status endpoint unavailable, using individual requests');
     

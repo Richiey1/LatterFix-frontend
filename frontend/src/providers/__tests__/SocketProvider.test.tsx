@@ -24,11 +24,15 @@ vi.mock('socket.io-client', () => ({
 }));
 
 // Mock notification hook
+const mockNotifySuccess = vi.fn();
+const mockNotifyError = vi.fn();
+const mockNotify = vi.fn();
+
 vi.mock('../../hooks/useNotification', () => ({
   useNotification: () => ({
-    notifySuccess: vi.fn(),
-    notifyError: vi.fn(),
-    notify: vi.fn(),
+    notifySuccess: mockNotifySuccess,
+    notifyError: mockNotifyError,
+    notify: mockNotify,
   }),
 }));
 

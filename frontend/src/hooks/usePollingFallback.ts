@@ -11,7 +11,7 @@
  * - Seamless transition between WebSocket and polling modes
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTransactionStore, type TransactionUpdate } from '../stores/transactionStore';
 import { pollTransactionStatusBatch } from '../services/pollingService';
 
@@ -48,27 +48,54 @@ export function usePollingFallback(
 ): UsePollingFallbackReturn {
   const { config: userConfig, getSubscribedTransactionIds } = options;
 
-  const config = { ...DEFAULT_CONFIG, ...userConfig };
+  const config = useMemo(() => ({
+    ...DEFAULT_CONFIG,
+    ...userConfig,
+  }), [
+    userConfig?.enabled,
+    userConfig?.interval,
+    userConfig?.maxInterval,
+    userConfig?.backoffMultiplier,
+    userConfig?.maxRetries,
+  ]);
 
   const pollingIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryCountRef = useRef(0);
   const isPollingRef = useRef(false);
+  const maxRetriesReachedRef = useRef(false);
 
-  const {
-    wsConnected,
-    isPolling,
-    setIsPolling,
-    updateTransaction,
-    setWsReconnecting,
-  } = useTransactionStore();
+  const getSubscribedTransactionIdsRef = useRef(getSubscribedTransactionIds);
+  useEffect(() => {
+    getSubscribedTransactionIdsRef.current = getSubscribedTransactionIds;
+  });
+
+  const wsConnected = useTransactionStore((state) => state.wsConnected);
+  const isPolling = useTransactionStore((state) => state.isPolling);
+  const setIsPolling = useTransactionStore((state) => state.setIsPolling);
+  const updateTransaction = useTransactionStore((state) => state.updateTransaction);
+  const setWsReconnecting = useTransactionStore((state) => state.setWsReconnecting);
+
+  // Stop polling
+  const stopPolling = useCallback(() => {
+    isPollingRef.current = false;
+    setIsPolling(false);
+
+    if (pollingIntervalRef.current) {
+      clearTimeout(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+
+    retryCountRef.current = 0;
+  }, [setIsPolling]);
 
   // Single poll execution with exponential backoff
   const executePoll = useCallback(async () => {
-    if (!getSubscribedTransactionIds) {
+    const getSubscribed = getSubscribedTransactionIdsRef.current;
+    if (!getSubscribed) {
       return;
     }
 
-    const transactionIds = getSubscribedTransactionIds();
+    const transactionIds = getSubscribed();
     if (transactionIds.length === 0) {
       return;
     }
@@ -97,10 +124,11 @@ export function usePollingFallback(
       retryCountRef.current += 1;
       if (retryCountRef.current >= config.maxRetries) {
         console.warn('Max polling retries reached, stopping polling');
+        maxRetriesReachedRef.current = true;
         stopPolling();
       }
     }
-  }, [getSubscribedTransactionIds, updateTransaction, config.maxRetries]);
+  }, [updateTransaction, config.maxRetries, stopPolling]);
 
   // Calculate current interval with exponential backoff
   const getCurrentInterval = useCallback(() => {
@@ -111,7 +139,7 @@ export function usePollingFallback(
 
   // Start polling loop
   const startPolling = useCallback(() => {
-    if (isPollingRef.current || wsConnected) {
+    if (isPollingRef.current || wsConnected || maxRetriesReachedRef.current) {
       return;
     }
 
@@ -130,25 +158,13 @@ export function usePollingFallback(
       // Schedule next poll
       if (isPollingRef.current && !wsConnected) {
         const interval = getCurrentInterval();
-        pollingIntervalRef.current = setTimeout(poll, interval);
+        pollingIntervalRef.current = setTimeout(() => { void poll(); }, interval);
       }
     };
 
     void poll();
   }, [wsConnected, setIsPolling, setWsReconnecting, executePoll, getCurrentInterval]);
 
-  // Stop polling
-  const stopPolling = useCallback(() => {
-    isPollingRef.current = false;
-    setIsPolling(false);
-
-    if (pollingIntervalRef.current) {
-      clearTimeout(pollingIntervalRef.current);
-      pollingIntervalRef.current = null;
-    }
-
-    retryCountRef.current = 0;
-  }, [setIsPolling]);
 
   // Force immediate poll (useful for user-initiated refresh)
   const forcePollNow = useCallback(async () => {
@@ -163,9 +179,10 @@ export function usePollingFallback(
 
   // Auto-start polling when WebSocket disconnects
   useEffect(() => {
-    if (config.enabled && !wsConnected) {
+    if (config.enabled && !wsConnected && !maxRetriesReachedRef.current) {
       startPolling();
     } else if (wsConnected) {
+      maxRetriesReachedRef.current = false;
       stopPolling();
     }
 

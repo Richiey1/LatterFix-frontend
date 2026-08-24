@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { usePollingFallback } from '../usePollingFallback';
 import { useTransactionStore } from '../../stores/transactionStore';
@@ -19,6 +19,7 @@ describe('usePollingFallback', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
+    vi.clearAllTimers();
     
     // Reset store
     useTransactionStore.setState({
@@ -30,10 +31,11 @@ describe('usePollingFallback', () => {
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
     vi.useRealTimers();
   });
 
-  it('should start polling when WebSocket is disconnected', async () => {
+  it('should start polling when WebSocket is disconnected', () => {
     const getSubscribedIds = vi.fn().mockReturnValue(['tx-123']);
 
     const { result } = renderHook(() =>
@@ -43,7 +45,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(() => {
+    act(() => {
       result.current.startPolling();
       vi.advanceTimersByTime(100);
     });
@@ -52,7 +54,7 @@ describe('usePollingFallback', () => {
     expect(useTransactionStore.getState().isPolling).toBe(true);
   });
 
-  it('should stop polling when WebSocket connects', async () => {
+  it('should stop polling when WebSocket connects', () => {
     useTransactionStore.setState({ wsConnected: false });
 
     const { result } = renderHook(() =>
@@ -62,7 +64,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(() => {
+    act(() => {
       result.current.startPolling();
     });
 
@@ -73,7 +75,7 @@ describe('usePollingFallback', () => {
       useTransactionStore.getState().setWsConnected(true);
     });
 
-    await act(() => {
+    act(() => {
       result.current.stopPolling();
     });
 
@@ -95,13 +97,13 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(() => {
+    act(() => {
       result.current.startPolling();
       vi.advanceTimersByTime(100);
     });
 
     // First poll fails, should schedule with backoff
-    await act(() => {
+    act(() => {
       vi.advanceTimersByTime(1000);
     });
 
@@ -118,7 +120,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(() => {
+    act(() => {
       result.current.startPolling();
       vi.advanceTimersByTime(100);
     });
@@ -130,7 +132,7 @@ describe('usePollingFallback', () => {
     expect(pollTransactionStatusBatch).toHaveBeenCalledWith(['tx-123']);
   });
 
-  it('should auto-start when enabled and WebSocket disconnected', async () => {
+  it('should auto-start when enabled and WebSocket disconnected', () => {
     useTransactionStore.setState({ wsConnected: false });
 
     renderHook(() =>
@@ -140,14 +142,14 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(() => {
+    act(() => {
       vi.advanceTimersByTime(100);
     });
 
     expect(useTransactionStore.getState().isPolling).toBe(true);
   });
 
-  it('should not start polling when WebSocket is connected', async () => {
+  it('should not start polling when WebSocket is connected', () => {
     useTransactionStore.setState({ wsConnected: true });
 
     renderHook(() =>
@@ -157,7 +159,7 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(() => {
+    act(() => {
       vi.advanceTimersByTime(100);
     });
 
@@ -179,14 +181,14 @@ describe('usePollingFallback', () => {
       })
     );
 
-    await act(() => {
+    act(() => {
       result.current.startPolling();
     });
 
     // Simulate multiple failed polls
     for (let i = 0; i < 5; i++) {
-      await act(() => {
-        vi.advanceTimersByTime(1000);
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
       });
     }
 
