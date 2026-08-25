@@ -9,11 +9,9 @@ import {
 import {
   Calendar,
   Clock,
-  DollarSign,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
-  Plus,
   Trash2,
   UserPlus,
 } from 'lucide-react';
