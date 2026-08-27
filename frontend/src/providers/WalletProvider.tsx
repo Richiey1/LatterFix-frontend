@@ -77,15 +77,21 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         return;
       }
 
-      setWalletName(lastWalletName);
       setIsConnecting(true);
 
       try {
         try {
           newKit.setWallet(lastWalletName);
         } catch {
-          // setWallet may throw if wallet not available — fall back to generic getAddress
+          try {
+            localStorage.removeItem(LAST_WALLET_STORAGE_KEY);
+          } catch {
+            // best-effort
+          }
+          setWalletName(null);
+          return;
         }
+        setWalletName(lastWalletName);
         const account = await newKit.getAddress();
         if (account?.address) {
           setAddress(account.address);
