@@ -143,7 +143,13 @@ export function useSorobanContract<TResult = unknown>(
         });
 
         if (!simulation.success) {
-          throw new Error(simulation.description || 'Simulation failed');
+          const simErr = new Error(simulation.description || 'Simulation failed') as Error & {
+            resultXdr?: string;
+          };
+          if (typeof simulation.envelopeXdr === 'string' && simulation.envelopeXdr.length > 0) {
+            simErr.resultXdr = simulation.envelopeXdr;
+          }
+          throw simErr;
         }
 
         const preparedTx = await rpcServer.prepareTransaction(transaction);
@@ -155,7 +161,14 @@ export function useSorobanContract<TResult = unknown>(
         const sendResponse = await rpcServer.sendTransaction(signedTx);
 
         if (sendResponse.status === 'ERROR') {
-          throw new Error('Soroban contract submission failed.');
+          const sendErr = new Error('Soroban contract submission failed.') as Error & {
+            resultXdr?: string;
+          };
+          const maybeXdr = (sendResponse as unknown as { errorResultXdr?: string }).errorResultXdr;
+          if (typeof maybeXdr === 'string' && maybeXdr.length > 0) {
+            sendErr.resultXdr = maybeXdr;
+          }
+          throw sendErr;
         }
 
         let txResponse: rpc.Api.GetTransactionResponse | null = null;
@@ -173,7 +186,16 @@ export function useSorobanContract<TResult = unknown>(
         }
 
         if (txResponse.status !== rpc.Api.GetTransactionStatus.SUCCESS) {
-          throw new Error(`Transaction failed with status: ${txResponse.status}`);
+          const txErr = new Error(
+            `Transaction failed with status: ${txResponse.status}`
+          ) as Error & {
+            resultXdr?: string;
+          };
+          const xdrValue = (txResponse as unknown as { resultXdr?: string }).resultXdr;
+          if (typeof xdrValue === 'string' && xdrValue.length > 0) {
+            txErr.resultXdr = xdrValue;
+          }
+          throw txErr;
         }
 
         const raw = getResultValue(txResponse);

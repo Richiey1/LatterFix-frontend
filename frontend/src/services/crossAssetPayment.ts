@@ -131,7 +131,15 @@ export async function submitCrossAssetPayment(
 
   const simulation = await simulateTransaction({ envelopeXdr: tx.toXDR() });
   if (!simulation.success) {
-    throw new Error(simulation.description || 'Simulation failed for cross-asset payment');
+    const err = new Error(
+      simulation.description || 'Simulation failed for cross-asset payment'
+    ) as Error & {
+      resultXdr?: string;
+    };
+    if (typeof simulation.envelopeXdr === 'string' && simulation.envelopeXdr.length > 0) {
+      err.resultXdr = simulation.envelopeXdr;
+    }
+    throw err;
   }
 
   const prepared = await server.prepareTransaction(tx);
@@ -140,7 +148,14 @@ export async function submitCrossAssetPayment(
   const submitted = await server.sendTransaction(signedTx);
 
   if (submitted.status === 'ERROR') {
-    throw new Error('Cross-asset contract submission failed.');
+    const err = new Error('Cross-asset contract submission failed.') as Error & {
+      resultXdr?: string;
+    };
+    const maybeXdr = (submitted as unknown as { errorResultXdr?: string }).errorResultXdr;
+    if (typeof maybeXdr === 'string' && maybeXdr.length > 0) {
+      err.resultXdr = maybeXdr;
+    }
+    throw err;
   }
 
   return { txHash: submitted.hash };

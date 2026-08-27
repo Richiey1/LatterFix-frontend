@@ -29,8 +29,16 @@ export default function PayrollScheduler() {
 
   useEffect(() => {
     const saved = loadSavedData();
-    if (saved) {
-      setFormData(saved);
+    if (saved && typeof saved === 'object') {
+      const raw = saved as Partial<PayrollFormState>;
+      const normalized: PayrollFormState = {
+        employeeName: typeof raw.employeeName === 'string' ? raw.employeeName : '',
+        amount: typeof raw.amount === 'string' ? raw.amount : '',
+        frequency:
+          raw.frequency === 'weekly' || raw.frequency === 'monthly' ? raw.frequency : 'monthly',
+        startDate: typeof raw.startDate === 'string' ? raw.startDate : '',
+      };
+      setFormData(normalized);
     }
   }, [loadSavedData]);
 
@@ -41,14 +49,26 @@ export default function PayrollScheduler() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Simulate an error for demonstration since actual contract integration is missing here
-    try {
-      throw new Error('Contract call failed (Simulated).');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Unknown error';
-      setContractError(parseContractError(undefined, message));
+    setContractError(null);
+
+    if (
+      typeof formData.employeeName !== 'string' ||
+      typeof formData.amount !== 'string' ||
+      !formData.employeeName.trim() ||
+      !formData.amount.trim() ||
+      !formData.startDate
+    ) {
+      setContractError(parseContractError(undefined, 'Error(Contract, 6)'));
+      return;
     }
+
+    const parsedAmount = Number(formData.amount);
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+      setContractError(parseContractError(undefined, 'Error(Contract, 6)'));
+      return;
+    }
+
+    console.log('Payroll stream queued (contract wiring pending):', formData);
   };
 
   return (

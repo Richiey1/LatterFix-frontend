@@ -111,7 +111,12 @@ export default function CrossAssetPayment() {
     } catch (err: unknown) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setContractError(parseContractError(undefined, errorMessage));
+      const rawXdr =
+        err != null && typeof err === 'object' && 'resultXdr' in err
+          ? (err as { resultXdr: unknown }).resultXdr
+          : undefined;
+      const resultXdr = typeof rawXdr === 'string' && rawXdr.length > 0 ? rawXdr : undefined;
+      setContractError(parseContractError(resultXdr, errorMessage));
     } finally {
       setIsSubmitting(false);
     }

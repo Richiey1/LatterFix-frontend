@@ -230,7 +230,12 @@ export default function VestingEscrowManager() {
       setForm(createDefaultForm());
     } catch (createError) {
       const message = createError instanceof Error ? createError.message : 'Grant creation failed';
-      setContractError(parseContractError(undefined, message));
+      const rawXdr =
+        createError != null && typeof createError === 'object' && 'resultXdr' in createError
+          ? (createError as { resultXdr: unknown }).resultXdr
+          : undefined;
+      const resultXdr = typeof rawXdr === 'string' && rawXdr.length > 0 ? rawXdr : undefined;
+      setContractError(parseContractError(resultXdr, message));
     } finally {
       setIsSubmitting(false);
       void loadGrants();
@@ -257,7 +262,12 @@ export default function VestingEscrowManager() {
       void loadGrants();
     } catch (claimError) {
       const message = claimError instanceof Error ? claimError.message : 'Claim failed';
-      setContractError(parseContractError(undefined, message));
+      const rawXdr =
+        claimError != null && typeof claimError === 'object' && 'resultXdr' in claimError
+          ? (claimError as { resultXdr: unknown }).resultXdr
+          : undefined;
+      const resultXdr = typeof rawXdr === 'string' && rawXdr.length > 0 ? rawXdr : undefined;
+      setContractError(parseContractError(resultXdr, message));
     } finally {
       setIsClaiming(false);
     }
