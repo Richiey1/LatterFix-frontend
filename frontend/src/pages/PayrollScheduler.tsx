@@ -31,12 +31,20 @@ export default function PayrollScheduler() {
     const saved = loadSavedData();
     if (saved && typeof saved === 'object') {
       const raw = saved as Partial<PayrollFormState>;
+      const isValidDate = (value: unknown): boolean => {
+        if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+        const [y, m, d] = value.split('-').map(Number);
+        const date = new Date(Date.UTC(y, m - 1, d));
+        return (
+          date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d
+        );
+      };
       const normalized: PayrollFormState = {
         employeeName: typeof raw.employeeName === 'string' ? raw.employeeName : '',
         amount: typeof raw.amount === 'string' ? raw.amount : '',
         frequency:
           raw.frequency === 'weekly' || raw.frequency === 'monthly' ? raw.frequency : 'monthly',
-        startDate: typeof raw.startDate === 'string' ? raw.startDate : '',
+        startDate: isValidDate(raw.startDate) ? (raw.startDate as string) : '',
       };
       setFormData(normalized);
     }
@@ -68,7 +76,7 @@ export default function PayrollScheduler() {
       return;
     }
 
-    console.log('Payroll stream queued (contract wiring pending):', formData);
+    console.log('Payroll stream queued (contract wiring pending)');
   };
 
   return (
@@ -92,10 +100,14 @@ export default function PayrollScheduler() {
         className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 card glass noise"
       >
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1">
+          <label
+            htmlFor="payroll-employeeName"
+            className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1"
+          >
             Employee Name
           </label>
           <input
+            id="payroll-employeeName"
             type="text"
             name="employeeName"
             value={formData.employeeName}
@@ -106,12 +118,16 @@ export default function PayrollScheduler() {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1">
+          <label
+            htmlFor="payroll-amount"
+            className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1"
+          >
             Amount (USD equivalent)
           </label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted font-mono">$</span>
             <input
+              id="payroll-amount"
               type="number"
               name="amount"
               value={formData.amount}
@@ -123,10 +139,14 @@ export default function PayrollScheduler() {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1">
+          <label
+            htmlFor="payroll-frequency"
+            className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1"
+          >
             Distribution Frequency
           </label>
           <select
+            id="payroll-frequency"
             name="frequency"
             value={formData.frequency}
             onChange={handleChange}
@@ -142,10 +162,14 @@ export default function PayrollScheduler() {
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1">
+          <label
+            htmlFor="payroll-startDate"
+            className="block text-xs font-bold uppercase tracking-widest text-muted mb-3 ml-1"
+          >
             Commencement Date
           </label>
           <input
+            id="payroll-startDate"
             type="date"
             name="startDate"
             value={formData.startDate}

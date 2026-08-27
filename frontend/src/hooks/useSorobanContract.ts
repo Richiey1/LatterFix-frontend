@@ -164,9 +164,19 @@ export function useSorobanContract<TResult = unknown>(
           const sendErr = new Error('Soroban contract submission failed.') as Error & {
             resultXdr?: string;
           };
-          const maybeXdr = (sendResponse as unknown as { errorResultXdr?: string }).errorResultXdr;
-          if (typeof maybeXdr === 'string' && maybeXdr.length > 0) {
-            sendErr.resultXdr = maybeXdr;
+          const resp = sendResponse as unknown as {
+            errorResultXdr?: string;
+            errorResult?: { toXDR?: (format: string) => string };
+          };
+          if (typeof resp.errorResultXdr === 'string' && resp.errorResultXdr.length > 0) {
+            sendErr.resultXdr = resp.errorResultXdr;
+          } else if (resp.errorResult && typeof resp.errorResult.toXDR === 'function') {
+            try {
+              const b64 = resp.errorResult.toXDR('base64');
+              if (typeof b64 === 'string' && b64.length > 0) sendErr.resultXdr = b64;
+            } catch {
+              // ignore serialization failure
+            }
           }
           throw sendErr;
         }
@@ -191,9 +201,20 @@ export function useSorobanContract<TResult = unknown>(
           ) as Error & {
             resultXdr?: string;
           };
-          const xdrValue = (txResponse as unknown as { resultXdr?: string }).resultXdr;
-          if (typeof xdrValue === 'string' && xdrValue.length > 0) {
-            txErr.resultXdr = xdrValue;
+          const txAny = txResponse as unknown as {
+            resultXdr?: string;
+            resultMetaXdr?: string;
+            result?: { toXDR?: (format: string) => string };
+          };
+          if (typeof txAny.resultXdr === 'string' && txAny.resultXdr.length > 0) {
+            txErr.resultXdr = txAny.resultXdr;
+          } else if (txAny.result && typeof txAny.result.toXDR === 'function') {
+            try {
+              const b64 = txAny.result.toXDR('base64');
+              if (typeof b64 === 'string' && b64.length > 0) txErr.resultXdr = b64;
+            } catch {
+              // ignore serialization failure
+            }
           }
           throw txErr;
         }

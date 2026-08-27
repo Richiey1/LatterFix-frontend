@@ -151,9 +151,19 @@ export async function submitCrossAssetPayment(
     const err = new Error('Cross-asset contract submission failed.') as Error & {
       resultXdr?: string;
     };
-    const maybeXdr = (submitted as unknown as { errorResultXdr?: string }).errorResultXdr;
-    if (typeof maybeXdr === 'string' && maybeXdr.length > 0) {
-      err.resultXdr = maybeXdr;
+    const resp = submitted as unknown as {
+      errorResultXdr?: string;
+      errorResult?: { toXDR?: (format: string) => string };
+    };
+    if (typeof resp.errorResultXdr === 'string' && resp.errorResultXdr.length > 0) {
+      err.resultXdr = resp.errorResultXdr;
+    } else if (resp.errorResult && typeof resp.errorResult.toXDR === 'function') {
+      try {
+        const b64 = resp.errorResult.toXDR('base64');
+        if (typeof b64 === 'string' && b64.length > 0) err.resultXdr = b64;
+      } catch {
+        // ignore serialization failure
+      }
     }
     throw err;
   }
