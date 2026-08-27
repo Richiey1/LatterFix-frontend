@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchAuditRecords, type AuditFilters, type AuditRecord } from '../services/audit';
-import { fetchContractEvents, type SorobanContractEvent } from '../services/transactionHistory';
+import type { SorobanContractEvent } from '../services/transactionHistory';
 import { getContractId } from '../services/sorobanTaskContract';
 
 export interface TimelineEntry {
@@ -13,7 +13,62 @@ export interface TimelineEntry {
 }
 
 const AUDIT_PAGE_SIZE = 20;
-const CONTRACT_START_LEDGER = 5_000_000;
+
+const API_BASE_URL =
+  (import.meta.env.VITE_API_URL as string | undefined) ||
+  (import.meta.env.VITE_BACKEND_URL as string | undefined) ||
+  'http://localhost:3000';
+
+async function fetchIndexedContractEvents(contractId: string): Promise<SorobanContractEvent[]> {
+  const token = localStorage.getItem('payd_auth_token');
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(
+    `${API_BASE_URL.replace(/\/+$/, '')}/api/events/${contractId}?limit=20&page=1`,
+    { headers }
+  );
+  if (!res.ok) throw new Error(`events fetch failed ${res.status}`);
+  const data = (await res.json()) as {
+    data?: Array<{
+      event_id: string;
+      contract_id: string;
+      event_type: string;
+      payload: string;
+      ledger_sequence: number;
+      tx_hash: string;
+      created_at: string;
+    }>;
+  };
+  const rows = data.data ?? [];
+  return rows.map((r) => {
+    let payload: Record<string, unknown> = {};
+    try {
+      payload = JSON.parse(r.payload) as Record<string, unknown>;
+    } catch {
+      // keep empty
+    }
+    const topic = (payload.topic as string[] | undefined) ?? [r.event_type];
+    const value = payload.value != null ? String(payload.value) : JSON.stringify(payload);
+    return {
+      id: r.event_id,
+      type: r.event_type,
+      ledger: r.ledger_sequence,
+      ledgerClosedAt: r.created_at,
+      contractId: r.contract_id,
+      topic: Array.isArray(topic) ? (topic as string[]) : [String(topic)],
+      topics: Array.isArray(topic) ? (topic as string[]) : [String(topic)],
+      value,
+      txHash: r.tx_hash,
+    } as SorobanContractEvent;
+  });
+}
+
+function toEndOfDayTs(dateStr: string): number {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return new Date(`${dateStr}T23:59:59.999Z`).getTime();
+  }
+  return new Date(dateStr).getTime();
+}
 
 export function useAuditHistory(filters: AuditFilters & { address?: string | null }) {
   return useInfiniteQuery({
@@ -34,9 +89,9 @@ export function useAuditHistory(filters: AuditFilters & { address?: string | nul
         try {
           const contractId = getContractId();
           if (contractId) {
-            const events = await fetchContractEvents(contractId, CONTRACT_START_LEDGER, 20);
+            const events = await fetchIndexedContractEvents(contractId);
             const fromTs = filters.from ? new Date(filters.from).getTime() : undefined;
-            const toTs = filters.to ? new Date(filters.to).getTime() : undefined;
+            const toTs = filters.to ? toEndOfDayTs(filters.to) : undefined;
             contractEvents = events.filter((e) => {
               const ts = new Date(e.ledgerClosedAt).getTime();
               if (fromTs !== undefined && ts < fromTs) return false;
@@ -45,7 +100,7 @@ export function useAuditHistory(filters: AuditFilters & { address?: string | nul
             });
           }
         } catch {
-          // indexer may be empty — timeline still shows audit records
+          // indexer may be empty or not yet deployed — timeline still shows audit records
         }
       }
 
