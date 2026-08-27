@@ -250,6 +250,7 @@ export default function PaymentHistory() {
               type="date"
               value={auditFrom}
               onChange={(e) => setAuditFrom(e.target.value)}
+              aria-label="Filter from date"
               className="bg-black/25 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent/40"
               placeholder="From"
             />
@@ -257,12 +258,14 @@ export default function PaymentHistory() {
               type="date"
               value={auditTo}
               onChange={(e) => setAuditTo(e.target.value)}
+              aria-label="Filter to date"
               className="bg-black/25 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent/40"
               placeholder="To"
             />
             <select
               value={auditStatus}
               onChange={(e) => setAuditStatus(e.target.value)}
+              aria-label="Filter by status"
               className="bg-black/25 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent/40"
             >
               <option value="">All statuses</option>
@@ -274,6 +277,7 @@ export default function PaymentHistory() {
               value={auditEmployee}
               onChange={(e) => setAuditEmployee(e.target.value)}
               placeholder="Employee"
+              aria-label="Filter by employee"
               className="bg-black/25 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent/40"
             />
             <input
@@ -281,6 +285,7 @@ export default function PaymentHistory() {
               value={auditAsset}
               onChange={(e) => setAuditAsset(e.target.value)}
               placeholder="Asset"
+              aria-label="Filter by asset"
               className="bg-black/25 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent/40"
             />
           </div>
@@ -293,7 +298,9 @@ export default function PaymentHistory() {
             </div>
           ) : (
             (() => {
-              const timeline = auditQuery.data?.pages.flatMap((p) => p.timeline) ?? [];
+              const timeline = (auditQuery.data?.pages.flatMap((p) => p.timeline) ?? []).sort(
+                (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+              );
               if (timeline.length === 0) {
                 return (
                   <div className="text-center py-12 text-muted text-sm">

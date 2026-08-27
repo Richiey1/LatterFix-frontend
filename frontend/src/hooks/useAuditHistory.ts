@@ -29,35 +29,42 @@ export function useAuditHistory(filters: AuditFilters & { address?: string | nul
         asset: filters.asset,
       });
 
-      // Contract events for the same window — distinct badge in the timeline
       let contractEvents: SorobanContractEvent[] = [];
-      try {
-        const contractId = getContractId();
-        if (contractId) {
-          contractEvents = await fetchContractEvents(contractId, CONTRACT_START_LEDGER, 20);
+      if (page === 1) {
+        try {
+          const contractId = getContractId();
+          if (contractId) {
+            const events = await fetchContractEvents(contractId, CONTRACT_START_LEDGER, 20);
+            const fromTs = filters.from ? new Date(filters.from).getTime() : undefined;
+            const toTs = filters.to ? new Date(filters.to).getTime() : undefined;
+            contractEvents = events.filter((e) => {
+              const ts = new Date(e.ledgerClosedAt).getTime();
+              if (fromTs !== undefined && ts < fromTs) return false;
+              if (toTs !== undefined && ts > toTs) return false;
+              return true;
+            });
+          }
+        } catch {
+          // indexer may be empty — timeline still shows audit records
         }
-      } catch {
-        // indexer may be empty — timeline still shows audit records
       }
 
       const timeline: TimelineEntry[] = [
         ...auditPage.records.map((r) => ({
-          id: `audit-${r.txHash}`,
+          id: `audit-${r.id}`,
           kind: 'audit' as const,
           timestamp: r.createdAt,
           ledger: r.ledger,
           record: r,
         })),
-        ...(page === 1
-          ? contractEvents.map((e) => ({
-              id: `evt-${e.id}`,
-              kind: 'contract-event' as const,
-              timestamp: e.ledgerClosedAt,
-              ledger: e.ledger,
-              event: e,
-            }))
-          : []),
-      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        ...contractEvents.map((e) => ({
+          id: `evt-${e.id}`,
+          kind: 'contract-event' as const,
+          timestamp: e.ledgerClosedAt,
+          ledger: e.ledger,
+          event: e,
+        })),
+      ];
 
       return {
         timeline,
