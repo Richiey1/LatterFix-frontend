@@ -70,7 +70,6 @@ async function fetchIndexedContractEvents(contractId: string): Promise<SorobanCo
     const totalPages = data.pagination?.totalPages ?? (rows.length < limit ? page : page + 1);
     if (page >= totalPages || rows.length < limit) break;
     page += 1;
-    if (page > 20) break;
   }
   return all;
 }
