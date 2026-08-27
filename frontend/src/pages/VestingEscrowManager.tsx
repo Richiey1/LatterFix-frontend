@@ -14,6 +14,8 @@ import { useNotification } from '../hooks/useNotification';
 import { useWallet } from '../hooks/useWallet';
 import { useVestingEscrowContract, type VestingGrantResult } from '../hooks/usePayrollContracts';
 import { getExplorerUrl } from '../services/stellar';
+import { ContractErrorPanel } from '../components/ContractErrorPanel';
+import { parseContractError, type ContractErrorDetail } from '../utils/contractErrorParser';
 
 interface VestingGrantState extends VestingGrantResult {
   vestedAmount: string;
@@ -60,6 +62,7 @@ export default function VestingEscrowManager() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClaiming, setIsClaiming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [contractError, setContractError] = useState<ContractErrorDetail | null>(null);
   const [lastTx, setLastTx] = useState<{ hash: string; action: string } | null>(null);
   const [form, setForm] = useState<GrantFormState>(createDefaultForm);
 
@@ -204,6 +207,7 @@ export default function VestingEscrowManager() {
 
     setIsSubmitting(true);
     setError(null);
+    setContractError(null);
 
     try {
       const startTime = toTimestampSeconds(form.startDate);
@@ -226,8 +230,7 @@ export default function VestingEscrowManager() {
       setForm(createDefaultForm());
     } catch (createError) {
       const message = createError instanceof Error ? createError.message : 'Grant creation failed';
-      setError(message);
-      notifyError('Grant creation failed', message);
+      setContractError(parseContractError(undefined, message));
     } finally {
       setIsSubmitting(false);
       void loadGrants();
@@ -242,6 +245,7 @@ export default function VestingEscrowManager() {
 
     setIsClaiming(true);
     setError(null);
+    setContractError(null);
 
     try {
       const result = await vestingContract.claim();
@@ -253,8 +257,7 @@ export default function VestingEscrowManager() {
       void loadGrants();
     } catch (claimError) {
       const message = claimError instanceof Error ? claimError.message : 'Claim failed';
-      setError(message);
-      notifyError('Claim failed', message);
+      setContractError(parseContractError(undefined, message));
     } finally {
       setIsClaiming(false);
     }
@@ -359,6 +362,8 @@ export default function VestingEscrowManager() {
           <p className="text-red-400">{error}</p>
         </div>
       ) : null}
+
+      <ContractErrorPanel error={contractError} onClear={() => setContractError(null)} />
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="card glass noise p-4">

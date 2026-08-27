@@ -4,6 +4,8 @@ import { useWallet } from '../hooks/useWallet';
 import { useNotification } from '../hooks/useNotification';
 import { useSocket } from '../hooks/useSocket';
 import { getContractId } from '../services/sorobanTaskContract';
+import { ContractErrorPanel } from '../components/ContractErrorPanel';
+import { parseContractError, type ContractErrorDetail } from '../utils/contractErrorParser';
 import {
   fetchConversionPaths,
   submitCrossAssetPayment,
@@ -28,6 +30,7 @@ export default function CrossAssetPayment() {
   const [isPathfinding, setIsPathfinding] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [txStatus, setTxStatus] = useState<{ id: string; status: string } | null>(null);
+  const [contractError, setContractError] = useState<ContractErrorDetail | null>(null);
 
   const amount = parseFloat(amountStr);
 
@@ -86,6 +89,7 @@ export default function CrossAssetPayment() {
 
     setIsSubmitting(true);
     setTxStatus(null);
+    setContractError(null);
     try {
       const contractId = getContractId();
       const result = await submitCrossAssetPayment({
@@ -106,7 +110,8 @@ export default function CrossAssetPayment() {
       subscribeToTransaction(result.txHash);
     } catch (err: unknown) {
       console.error(err);
-      notifyError('Transaction failed', err instanceof Error ? err.message : 'Unknown error');
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setContractError(parseContractError(undefined, errorMessage));
     } finally {
       setIsSubmitting(false);
     }
@@ -126,6 +131,8 @@ export default function CrossAssetPayment() {
           for optimal conversion rates.
         </p>
       </div>
+
+      <ContractErrorPanel error={contractError} onClear={() => setContractError(null)} />
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Payment Form */}
