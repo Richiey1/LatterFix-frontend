@@ -65,11 +65,16 @@ export default function PayrollScheduler() {
     contractService
       .initialize()
       .then(() => {
-        const id =
-          contractService.getContractId('vesting_escrow', getActiveNetwork()) ??
-          contractService.getContractId('bulk_payment', getActiveNetwork()) ??
-          null;
-        setPayrollContractId(id);
+        // Payroll Streams contract is not yet deployed in the registry; do not
+        // fall back to unrelated vesting_escrow/bulk_payment ABIs which lack
+        // create_payroll_stream and would fail every submission.
+        const id = (
+          contractService.getContractId as unknown as (
+            type: string,
+            network: ReturnType<typeof getActiveNetwork>
+          ) => string | null
+        )('payroll_stream', getActiveNetwork());
+        setPayrollContractId(id ?? null);
       })
       .catch(() => {
         // keep null - submission will surface a not-initialized error via the panel
@@ -96,8 +101,24 @@ export default function PayrollScheduler() {
       return;
     }
 
-    const parsedAmount = Number(formData.amount);
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+    const parseAmountToStroops = (value: string): bigint | null => {
+      const trimmed = value.trim();
+      if (!/^\d+(\.\d+)?$/.test(trimmed)) return null;
+      const [intPart, fracPart = ''] = trimmed.split('.');
+      if (fracPart.length > 7) return null;
+      const fracPadded = (fracPart + '0000000').slice(0, 7);
+      try {
+        const stroops = BigInt(intPart) * 10_000_000n + BigInt(fracPadded);
+        if (stroops <= 0n) return null;
+        if (stroops > 170141183460469231731687303715884105727n) return null;
+        return stroops;
+      } catch {
+        return null;
+      }
+    };
+
+    const amountStroops = parseAmountToStroops(formData.amount);
+    if (amountStroops === null) {
       setContractError(parseContractError(undefined, 'Error(Contract, 6)'));
       return;
     }
@@ -114,7 +135,6 @@ export default function PayrollScheduler() {
 
     try {
       const startTime = Math.floor(new Date(formData.startDate).getTime() / 1000);
-      const amountStroops = BigInt(Math.floor(parsedAmount * 10_000_000));
 
       await invokePayroll({
         method: 'create_payroll_stream',
