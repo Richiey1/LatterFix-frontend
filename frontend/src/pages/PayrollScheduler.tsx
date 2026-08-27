@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { Address, nativeToScVal } from '@stellar/stellar-sdk';
 import { AutosaveIndicator } from '../components/AutosaveIndicator';
 import { useAutosave } from '../hooks/useAutosave';
 import { ContractErrorPanel } from '../components/ContractErrorPanel';
 import { parseContractError, type ContractErrorDetail } from '../utils/contractErrorParser';
+import { useWallet } from '../hooks/useWallet';
+import { useSorobanContract } from '../hooks/useSorobanContract';
+import { contractService } from '../services/contracts';
+import { getActiveNetwork } from '../services/networkConfig';
 
 interface PayrollFormState {
   employeeName: string;
@@ -19,12 +24,18 @@ const initialFormState: PayrollFormState = {
 };
 
 export default function PayrollScheduler() {
+  const { address } = useWallet();
   const [formData, setFormData] = useState<PayrollFormState>(initialFormState);
   const [contractError, setContractError] = useState<ContractErrorDetail | null>(null);
+  const [payrollContractId, setPayrollContractId] = useState<string | null>(null);
 
   const { saving, lastSaved, loadSavedData } = useAutosave<PayrollFormState>(
     'payroll-scheduler-draft',
     formData
+  );
+
+  const { invoke: invokePayroll, loading: isPayrollSubmitting } = useSorobanContract(
+    payrollContractId ?? 'CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH3KI'
   );
 
   useEffect(() => {
@@ -50,12 +61,27 @@ export default function PayrollScheduler() {
     }
   }, [loadSavedData]);
 
+  useEffect(() => {
+    contractService
+      .initialize()
+      .then(() => {
+        const id =
+          contractService.getContractId('vesting_escrow', getActiveNetwork()) ??
+          contractService.getContractId('bulk_payment', getActiveNetwork()) ??
+          null;
+        setPayrollContractId(id);
+      })
+      .catch(() => {
+        // keep null - submission will surface a not-initialized error via the panel
+      });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setContractError(null);
 
@@ -76,7 +102,39 @@ export default function PayrollScheduler() {
       return;
     }
 
-    console.log('Payroll stream queued (contract wiring pending)');
+    if (!address) {
+      setContractError(parseContractError(undefined, 'Error(Contract, 3)'));
+      return;
+    }
+
+    if (!payrollContractId) {
+      setContractError(parseContractError(undefined, 'Error(Contract, 2)'));
+      return;
+    }
+
+    try {
+      const startTime = Math.floor(new Date(formData.startDate).getTime() / 1000);
+      const amountStroops = BigInt(Math.floor(parsedAmount * 10_000_000));
+
+      await invokePayroll({
+        method: 'create_payroll_stream',
+        args: [
+          new Address(address),
+          nativeToScVal(formData.employeeName),
+          amountStroops,
+          BigInt(startTime),
+          nativeToScVal(formData.frequency),
+        ],
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Payroll submission failed';
+      const rawXdr =
+        err != null && typeof err === 'object' && 'resultXdr' in err
+          ? (err as { resultXdr: unknown }).resultXdr
+          : undefined;
+      const resultXdr = typeof rawXdr === 'string' && rawXdr.length > 0 ? rawXdr : undefined;
+      setContractError(parseContractError(resultXdr, message));
+    }
   };
 
   return (
@@ -96,7 +154,9 @@ export default function PayrollScheduler() {
       <ContractErrorPanel error={contractError} onClear={() => setContractError(null)} />
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={(e) => {
+          void handleSubmit(e);
+        }}
         className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 card glass noise"
       >
         <div className="md:col-span-2">
@@ -182,9 +242,10 @@ export default function PayrollScheduler() {
           <button
             id="tour-init-payroll"
             type="submit"
-            className="w-full py-4 bg-accent text-bg font-black rounded-xl hover:scale-[1.01] transition-transform shadow-lg shadow-accent/10 uppercase tracking-widest text-sm"
+            disabled={isPayrollSubmitting}
+            className="w-full py-4 bg-accent text-bg font-black rounded-xl hover:scale-[1.01] transition-transform shadow-lg shadow-accent/10 uppercase tracking-widest text-sm disabled:opacity-50"
           >
-            Initialize Payroll Stream
+            {isPayrollSubmitting ? 'Submitting...' : 'Initialize Payroll Stream'}
           </button>
         </div>
       </form>

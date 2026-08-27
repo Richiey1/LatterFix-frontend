@@ -165,18 +165,18 @@ export function useSorobanContract<TResult = unknown>(
             resultXdr?: string;
           };
           const resp = sendResponse as unknown as {
+            errorResult?: { toXDR: (format: string) => string };
             errorResultXdr?: string;
-            errorResult?: { toXDR?: (format: string) => string };
           };
-          if (typeof resp.errorResultXdr === 'string' && resp.errorResultXdr.length > 0) {
-            sendErr.resultXdr = resp.errorResultXdr;
-          } else if (resp.errorResult && typeof resp.errorResult.toXDR === 'function') {
+          if (resp.errorResult && typeof resp.errorResult.toXDR === 'function') {
             try {
               const b64 = resp.errorResult.toXDR('base64');
               if (typeof b64 === 'string' && b64.length > 0) sendErr.resultXdr = b64;
             } catch {
               // ignore serialization failure
             }
+          } else if (typeof resp.errorResultXdr === 'string' && resp.errorResultXdr.length > 0) {
+            sendErr.resultXdr = resp.errorResultXdr;
           }
           throw sendErr;
         }
@@ -201,19 +201,20 @@ export function useSorobanContract<TResult = unknown>(
           ) as Error & {
             resultXdr?: string;
           };
-          const txAny = txResponse as unknown as {
-            resultXdr?: string;
-            resultMetaXdr?: string;
-            result?: { toXDR?: (format: string) => string };
-          };
-          if (typeof txAny.resultXdr === 'string' && txAny.resultXdr.length > 0) {
-            txErr.resultXdr = txAny.resultXdr;
-          } else if (txAny.result && typeof txAny.result.toXDR === 'function') {
-            try {
-              const b64 = txAny.result.toXDR('base64');
-              if (typeof b64 === 'string' && b64.length > 0) txErr.resultXdr = b64;
-            } catch {
-              // ignore serialization failure
+          if (txResponse.status === rpc.Api.GetTransactionStatus.FAILED) {
+            const failed = txResponse as unknown as {
+              resultXdr?: { toXDR: (format: string) => string } | string;
+            };
+            const r = failed.resultXdr;
+            if (r && typeof (r as { toXDR?: unknown }).toXDR === 'function') {
+              try {
+                const b64 = (r as { toXDR: (f: string) => string }).toXDR('base64');
+                if (typeof b64 === 'string' && b64.length > 0) txErr.resultXdr = b64;
+              } catch {
+                // ignore serialization failure
+              }
+            } else if (typeof r === 'string' && r.length > 0) {
+              txErr.resultXdr = r;
             }
           }
           throw txErr;
