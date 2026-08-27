@@ -21,8 +21,8 @@ export const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ open, on
 
   if (!open) return null;
 
-  const handleSelect = async () => {
-    const addr = await connect();
+  const handleSelect = async (walletId: string) => {
+    const addr = await connect(walletId);
     if (addr) onClose();
   };
 
@@ -48,7 +48,7 @@ export const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ open, on
 
         <div className="space-y-2">
           <button
-            onClick={() => void handleSelect()}
+            onClick={() => void handleSelect('freighter')}
             disabled={isConnecting}
             className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white hover:bg-white/10 disabled:opacity-50"
           >
@@ -59,7 +59,7 @@ export const WalletConnectModal: React.FC<WalletConnectModalProps> = ({ open, on
           </button>
 
           <button
-            onClick={() => void handleSelect()}
+            onClick={() => void handleSelect('lobstr')}
             disabled={isConnecting}
             className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white hover:bg-white/10 disabled:opacity-50"
           >
