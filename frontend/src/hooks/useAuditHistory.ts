@@ -23,44 +23,56 @@ async function fetchIndexedContractEvents(contractId: string): Promise<SorobanCo
   const token = localStorage.getItem('payd_auth_token');
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
-  const res = await fetch(
-    `${API_BASE_URL.replace(/\/+$/, '')}/api/events/${contractId}?limit=20&page=1`,
-    { headers }
-  );
-  if (!res.ok) throw new Error(`events fetch failed ${res.status}`);
-  const data = (await res.json()) as {
-    data?: Array<{
-      event_id: string;
-      contract_id: string;
-      event_type: string;
-      payload: string;
-      ledger_sequence: number;
-      tx_hash: string;
-      created_at: string;
-    }>;
-  };
-  const rows = data.data ?? [];
-  return rows.map((r) => {
-    let payload: Record<string, unknown> = {};
-    try {
-      payload = JSON.parse(r.payload) as Record<string, unknown>;
-    } catch {
-      // keep empty
-    }
-    const topic = (payload.topic as string[] | undefined) ?? [r.event_type];
-    const value = payload.value != null ? String(payload.value) : JSON.stringify(payload);
-    return {
-      id: r.event_id,
-      type: r.event_type,
-      ledger: r.ledger_sequence,
-      ledgerClosedAt: r.created_at,
-      contractId: r.contract_id,
-      topic: Array.isArray(topic) ? (topic as string[]) : [String(topic)],
-      topics: Array.isArray(topic) ? (topic as string[]) : [String(topic)],
-      value,
-      txHash: r.tx_hash,
-    } as SorobanContractEvent;
-  });
+  let page = 1;
+  const limit = 100;
+  const all: SorobanContractEvent[] = [];
+  while (true) {
+    const res = await fetch(
+      `${API_BASE_URL.replace(/\/+$/, '')}/api/events/${contractId}?limit=${limit}&page=${page}`,
+      { headers }
+    );
+    if (!res.ok) throw new Error(`events fetch failed ${res.status}`);
+    const data = (await res.json()) as {
+      data?: Array<{
+        event_id: string;
+        contract_id: string;
+        event_type: string;
+        payload: string;
+        ledger_sequence: number;
+        tx_hash: string;
+        created_at: string;
+      }>;
+      pagination?: { totalPages?: number };
+    };
+    const rows = data.data ?? [];
+    const mapped = rows.map((r) => {
+      let payload: Record<string, unknown> = {};
+      try {
+        payload = JSON.parse(r.payload) as Record<string, unknown>;
+      } catch {
+        // keep empty
+      }
+      const topic = (payload.topic as string[] | undefined) ?? [r.event_type];
+      const value = payload.value != null ? String(payload.value) : JSON.stringify(payload);
+      return {
+        id: r.event_id,
+        type: r.event_type,
+        ledger: r.ledger_sequence,
+        ledgerClosedAt: r.created_at,
+        contractId: r.contract_id,
+        topic: Array.isArray(topic) ? (topic as string[]) : [String(topic)],
+        topics: Array.isArray(topic) ? (topic as string[]) : [String(topic)],
+        value,
+        txHash: r.tx_hash,
+      } as SorobanContractEvent;
+    });
+    all.push(...mapped);
+    const totalPages = data.pagination?.totalPages ?? (rows.length < limit ? page : page + 1);
+    if (page >= totalPages || rows.length < limit) break;
+    page += 1;
+    if (page > 20) break;
+  }
+  return all;
 }
 
 function toEndOfDayTs(dateStr: string): number {
