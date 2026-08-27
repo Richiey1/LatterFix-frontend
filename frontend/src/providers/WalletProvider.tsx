@@ -81,6 +81,11 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setIsConnecting(true);
 
       try {
+        try {
+          newKit.setWallet(lastWalletName);
+        } catch {
+          // setWallet may throw if wallet not available — fall back to generic getAddress
+        }
         const account = await newKit.getAddress();
         if (account?.address) {
           setAddress(account.address);
@@ -112,7 +117,11 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           const { address } = await kit.getAddress();
           setAddress(address);
           setWalletName(walletId);
-          localStorage.setItem(LAST_WALLET_STORAGE_KEY, walletId);
+          try {
+            localStorage.setItem(LAST_WALLET_STORAGE_KEY, walletId);
+          } catch {
+            // persistence is best-effort — connection still succeeds
+          }
           notifySuccess(
             'Wallet connected',
             `${address.slice(0, 6)}...${address.slice(-4)} via ${walletId}`
@@ -139,7 +148,11 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 const { address } = await kit.getAddress();
                 setAddress(address);
                 setWalletName(option.id);
-                localStorage.setItem(LAST_WALLET_STORAGE_KEY, option.id);
+                try {
+                  localStorage.setItem(LAST_WALLET_STORAGE_KEY, option.id);
+                } catch {
+                  // persistence is best-effort — connection still succeeds
+                }
                 notifySuccess(
                   'Wallet connected',
                   `${address.slice(0, 6)}...${address.slice(-4)} via ${option.id}`
